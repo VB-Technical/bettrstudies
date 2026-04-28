@@ -9,38 +9,207 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WritingExamRouteImport } from './routes/writing-exam'
+import { Route as TutorRouteImport } from './routes/tutor'
+import { Route as NotesCheckRouteImport } from './routes/notes-check'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SubjectSubjectIdRouteImport } from './routes/subject.$subjectId'
+import { Route as OnboardingThemeRouteImport } from './routes/onboarding.theme'
+import { Route as OnboardingLanguagesRouteImport } from './routes/onboarding.languages'
+import { Route as OnboardingBoardRouteImport } from './routes/onboarding.board'
+import { Route as SubjectSubjectIdChapterChapterIdxRouteImport } from './routes/subject.$subjectId.chapter.$chapterIdx'
 
+const WritingExamRoute = WritingExamRouteImport.update({
+  id: '/writing-exam',
+  path: '/writing-exam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorRoute = TutorRouteImport.update({
+  id: '/tutor',
+  path: '/tutor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesCheckRoute = NotesCheckRouteImport.update({
+  id: '/notes-check',
+  path: '/notes-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubjectSubjectIdRoute = SubjectSubjectIdRouteImport.update({
+  id: '/subject/$subjectId',
+  path: '/subject/$subjectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingThemeRoute = OnboardingThemeRouteImport.update({
+  id: '/onboarding/theme',
+  path: '/onboarding/theme',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingLanguagesRoute = OnboardingLanguagesRouteImport.update({
+  id: '/onboarding/languages',
+  path: '/onboarding/languages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingBoardRoute = OnboardingBoardRouteImport.update({
+  id: '/onboarding/board',
+  path: '/onboarding/board',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubjectSubjectIdChapterChapterIdxRoute =
+  SubjectSubjectIdChapterChapterIdxRouteImport.update({
+    id: '/chapter/$chapterIdx',
+    path: '/chapter/$chapterIdx',
+    getParentRoute: () => SubjectSubjectIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/home': typeof HomeRoute
+  '/notes-check': typeof NotesCheckRoute
+  '/tutor': typeof TutorRoute
+  '/writing-exam': typeof WritingExamRoute
+  '/onboarding/board': typeof OnboardingBoardRoute
+  '/onboarding/languages': typeof OnboardingLanguagesRoute
+  '/onboarding/theme': typeof OnboardingThemeRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRouteWithChildren
+  '/subject/$subjectId/chapter/$chapterIdx': typeof SubjectSubjectIdChapterChapterIdxRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/home': typeof HomeRoute
+  '/notes-check': typeof NotesCheckRoute
+  '/tutor': typeof TutorRoute
+  '/writing-exam': typeof WritingExamRoute
+  '/onboarding/board': typeof OnboardingBoardRoute
+  '/onboarding/languages': typeof OnboardingLanguagesRoute
+  '/onboarding/theme': typeof OnboardingThemeRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRouteWithChildren
+  '/subject/$subjectId/chapter/$chapterIdx': typeof SubjectSubjectIdChapterChapterIdxRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/home': typeof HomeRoute
+  '/notes-check': typeof NotesCheckRoute
+  '/tutor': typeof TutorRoute
+  '/writing-exam': typeof WritingExamRoute
+  '/onboarding/board': typeof OnboardingBoardRoute
+  '/onboarding/languages': typeof OnboardingLanguagesRoute
+  '/onboarding/theme': typeof OnboardingThemeRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRouteWithChildren
+  '/subject/$subjectId/chapter/$chapterIdx': typeof SubjectSubjectIdChapterChapterIdxRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/home'
+    | '/notes-check'
+    | '/tutor'
+    | '/writing-exam'
+    | '/onboarding/board'
+    | '/onboarding/languages'
+    | '/onboarding/theme'
+    | '/subject/$subjectId'
+    | '/subject/$subjectId/chapter/$chapterIdx'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/account'
+    | '/home'
+    | '/notes-check'
+    | '/tutor'
+    | '/writing-exam'
+    | '/onboarding/board'
+    | '/onboarding/languages'
+    | '/onboarding/theme'
+    | '/subject/$subjectId'
+    | '/subject/$subjectId/chapter/$chapterIdx'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/home'
+    | '/notes-check'
+    | '/tutor'
+    | '/writing-exam'
+    | '/onboarding/board'
+    | '/onboarding/languages'
+    | '/onboarding/theme'
+    | '/subject/$subjectId'
+    | '/subject/$subjectId/chapter/$chapterIdx'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  HomeRoute: typeof HomeRoute
+  NotesCheckRoute: typeof NotesCheckRoute
+  TutorRoute: typeof TutorRoute
+  WritingExamRoute: typeof WritingExamRoute
+  OnboardingBoardRoute: typeof OnboardingBoardRoute
+  OnboardingLanguagesRoute: typeof OnboardingLanguagesRoute
+  OnboardingThemeRoute: typeof OnboardingThemeRoute
+  SubjectSubjectIdRoute: typeof SubjectSubjectIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/writing-exam': {
+      id: '/writing-exam'
+      path: '/writing-exam'
+      fullPath: '/writing-exam'
+      preLoaderRoute: typeof WritingExamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutor': {
+      id: '/tutor'
+      path: '/tutor'
+      fullPath: '/tutor'
+      preLoaderRoute: typeof TutorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes-check': {
+      id: '/notes-check'
+      path: '/notes-check'
+      fullPath: '/notes-check'
+      preLoaderRoute: typeof NotesCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,21 +217,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subject/$subjectId': {
+      id: '/subject/$subjectId'
+      path: '/subject/$subjectId'
+      fullPath: '/subject/$subjectId'
+      preLoaderRoute: typeof SubjectSubjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/theme': {
+      id: '/onboarding/theme'
+      path: '/onboarding/theme'
+      fullPath: '/onboarding/theme'
+      preLoaderRoute: typeof OnboardingThemeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/languages': {
+      id: '/onboarding/languages'
+      path: '/onboarding/languages'
+      fullPath: '/onboarding/languages'
+      preLoaderRoute: typeof OnboardingLanguagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/board': {
+      id: '/onboarding/board'
+      path: '/onboarding/board'
+      fullPath: '/onboarding/board'
+      preLoaderRoute: typeof OnboardingBoardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subject/$subjectId/chapter/$chapterIdx': {
+      id: '/subject/$subjectId/chapter/$chapterIdx'
+      path: '/chapter/$chapterIdx'
+      fullPath: '/subject/$subjectId/chapter/$chapterIdx'
+      preLoaderRoute: typeof SubjectSubjectIdChapterChapterIdxRouteImport
+      parentRoute: typeof SubjectSubjectIdRoute
+    }
   }
 }
 
+interface SubjectSubjectIdRouteChildren {
+  SubjectSubjectIdChapterChapterIdxRoute: typeof SubjectSubjectIdChapterChapterIdxRoute
+}
+
+const SubjectSubjectIdRouteChildren: SubjectSubjectIdRouteChildren = {
+  SubjectSubjectIdChapterChapterIdxRoute:
+    SubjectSubjectIdChapterChapterIdxRoute,
+}
+
+const SubjectSubjectIdRouteWithChildren =
+  SubjectSubjectIdRoute._addFileChildren(SubjectSubjectIdRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  HomeRoute: HomeRoute,
+  NotesCheckRoute: NotesCheckRoute,
+  TutorRoute: TutorRoute,
+  WritingExamRoute: WritingExamRoute,
+  OnboardingBoardRoute: OnboardingBoardRoute,
+  OnboardingLanguagesRoute: OnboardingLanguagesRoute,
+  OnboardingThemeRoute: OnboardingThemeRoute,
+  SubjectSubjectIdRoute: SubjectSubjectIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
