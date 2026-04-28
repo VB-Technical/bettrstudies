@@ -9,7 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WritingExamRouteImport } from './routes/writing-exam'
+import { Route as TutorRouteImport } from './routes/tutor'
+import { Route as NotesCheckRouteImport } from './routes/notes-check'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SubjectSubjectIdRouteImport } from './routes/subject.$subjectId'
 import { Route as OnboardingThemeRouteImport } from './routes/onboarding.theme'
@@ -17,9 +21,29 @@ import { Route as OnboardingLanguagesRouteImport } from './routes/onboarding.lan
 import { Route as OnboardingBoardRouteImport } from './routes/onboarding.board'
 import { Route as SubjectSubjectIdChapterChapterIdxRouteImport } from './routes/subject.$subjectId.chapter.$chapterIdx'
 
+const WritingExamRoute = WritingExamRouteImport.update({
+  id: '/writing-exam',
+  path: '/writing-exam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorRoute = TutorRouteImport.update({
+  id: '/tutor',
+  path: '/tutor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesCheckRoute = NotesCheckRouteImport.update({
+  id: '/notes-check',
+  path: '/notes-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -56,7 +80,11 @@ const SubjectSubjectIdChapterChapterIdxRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/home': typeof HomeRoute
+  '/notes-check': typeof NotesCheckRoute
+  '/tutor': typeof TutorRoute
+  '/writing-exam': typeof WritingExamRoute
   '/onboarding/board': typeof OnboardingBoardRoute
   '/onboarding/languages': typeof OnboardingLanguagesRoute
   '/onboarding/theme': typeof OnboardingThemeRoute
@@ -65,7 +93,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/home': typeof HomeRoute
+  '/notes-check': typeof NotesCheckRoute
+  '/tutor': typeof TutorRoute
+  '/writing-exam': typeof WritingExamRoute
   '/onboarding/board': typeof OnboardingBoardRoute
   '/onboarding/languages': typeof OnboardingLanguagesRoute
   '/onboarding/theme': typeof OnboardingThemeRoute
@@ -75,7 +107,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/home': typeof HomeRoute
+  '/notes-check': typeof NotesCheckRoute
+  '/tutor': typeof TutorRoute
+  '/writing-exam': typeof WritingExamRoute
   '/onboarding/board': typeof OnboardingBoardRoute
   '/onboarding/languages': typeof OnboardingLanguagesRoute
   '/onboarding/theme': typeof OnboardingThemeRoute
@@ -86,7 +122,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/home'
+    | '/notes-check'
+    | '/tutor'
+    | '/writing-exam'
     | '/onboarding/board'
     | '/onboarding/languages'
     | '/onboarding/theme'
@@ -95,7 +135,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
     | '/home'
+    | '/notes-check'
+    | '/tutor'
+    | '/writing-exam'
     | '/onboarding/board'
     | '/onboarding/languages'
     | '/onboarding/theme'
@@ -104,7 +148,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/home'
+    | '/notes-check'
+    | '/tutor'
+    | '/writing-exam'
     | '/onboarding/board'
     | '/onboarding/languages'
     | '/onboarding/theme'
@@ -114,7 +162,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
   HomeRoute: typeof HomeRoute
+  NotesCheckRoute: typeof NotesCheckRoute
+  TutorRoute: typeof TutorRoute
+  WritingExamRoute: typeof WritingExamRoute
   OnboardingBoardRoute: typeof OnboardingBoardRoute
   OnboardingLanguagesRoute: typeof OnboardingLanguagesRoute
   OnboardingThemeRoute: typeof OnboardingThemeRoute
@@ -123,11 +175,39 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/writing-exam': {
+      id: '/writing-exam'
+      path: '/writing-exam'
+      fullPath: '/writing-exam'
+      preLoaderRoute: typeof WritingExamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutor': {
+      id: '/tutor'
+      path: '/tutor'
+      fullPath: '/tutor'
+      preLoaderRoute: typeof TutorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes-check': {
+      id: '/notes-check'
+      path: '/notes-check'
+      fullPath: '/notes-check'
+      preLoaderRoute: typeof NotesCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -189,7 +269,11 @@ const SubjectSubjectIdRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
   HomeRoute: HomeRoute,
+  NotesCheckRoute: NotesCheckRoute,
+  TutorRoute: TutorRoute,
+  WritingExamRoute: WritingExamRoute,
   OnboardingBoardRoute: OnboardingBoardRoute,
   OnboardingLanguagesRoute: OnboardingLanguagesRoute,
   OnboardingThemeRoute: OnboardingThemeRoute,
