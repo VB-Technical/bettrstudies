@@ -9,38 +9,114 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SubjectSubjectIdRouteImport } from './routes/subject.$subjectId'
+import { Route as OnboardingThemeRouteImport } from './routes/onboarding.theme'
+import { Route as OnboardingLanguagesRouteImport } from './routes/onboarding.languages'
+import { Route as OnboardingBoardRouteImport } from './routes/onboarding.board'
 
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubjectSubjectIdRoute = SubjectSubjectIdRouteImport.update({
+  id: '/subject/$subjectId',
+  path: '/subject/$subjectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingThemeRoute = OnboardingThemeRouteImport.update({
+  id: '/onboarding/theme',
+  path: '/onboarding/theme',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingLanguagesRoute = OnboardingLanguagesRouteImport.update({
+  id: '/onboarding/languages',
+  path: '/onboarding/languages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingBoardRoute = OnboardingBoardRouteImport.update({
+  id: '/onboarding/board',
+  path: '/onboarding/board',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/home': typeof HomeRoute
+  '/onboarding/board': typeof OnboardingBoardRoute
+  '/onboarding/languages': typeof OnboardingLanguagesRoute
+  '/onboarding/theme': typeof OnboardingThemeRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/home': typeof HomeRoute
+  '/onboarding/board': typeof OnboardingBoardRoute
+  '/onboarding/languages': typeof OnboardingLanguagesRoute
+  '/onboarding/theme': typeof OnboardingThemeRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/home': typeof HomeRoute
+  '/onboarding/board': typeof OnboardingBoardRoute
+  '/onboarding/languages': typeof OnboardingLanguagesRoute
+  '/onboarding/theme': typeof OnboardingThemeRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/home'
+    | '/onboarding/board'
+    | '/onboarding/languages'
+    | '/onboarding/theme'
+    | '/subject/$subjectId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/home'
+    | '/onboarding/board'
+    | '/onboarding/languages'
+    | '/onboarding/theme'
+    | '/subject/$subjectId'
+  id:
+    | '__root__'
+    | '/'
+    | '/home'
+    | '/onboarding/board'
+    | '/onboarding/languages'
+    | '/onboarding/theme'
+    | '/subject/$subjectId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HomeRoute: typeof HomeRoute
+  OnboardingBoardRoute: typeof OnboardingBoardRoute
+  OnboardingLanguagesRoute: typeof OnboardingLanguagesRoute
+  OnboardingThemeRoute: typeof OnboardingThemeRoute
+  SubjectSubjectIdRoute: typeof SubjectSubjectIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +124,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subject/$subjectId': {
+      id: '/subject/$subjectId'
+      path: '/subject/$subjectId'
+      fullPath: '/subject/$subjectId'
+      preLoaderRoute: typeof SubjectSubjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/theme': {
+      id: '/onboarding/theme'
+      path: '/onboarding/theme'
+      fullPath: '/onboarding/theme'
+      preLoaderRoute: typeof OnboardingThemeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/languages': {
+      id: '/onboarding/languages'
+      path: '/onboarding/languages'
+      fullPath: '/onboarding/languages'
+      preLoaderRoute: typeof OnboardingLanguagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/board': {
+      id: '/onboarding/board'
+      path: '/onboarding/board'
+      fullPath: '/onboarding/board'
+      preLoaderRoute: typeof OnboardingBoardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HomeRoute: HomeRoute,
+  OnboardingBoardRoute: OnboardingBoardRoute,
+  OnboardingLanguagesRoute: OnboardingLanguagesRoute,
+  OnboardingThemeRoute: OnboardingThemeRoute,
+  SubjectSubjectIdRoute: SubjectSubjectIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
