@@ -15,6 +15,7 @@ import { Route as SubjectSubjectIdRouteImport } from './routes/subject.$subjectI
 import { Route as OnboardingThemeRouteImport } from './routes/onboarding.theme'
 import { Route as OnboardingLanguagesRouteImport } from './routes/onboarding.languages'
 import { Route as OnboardingBoardRouteImport } from './routes/onboarding.board'
+import { Route as SubjectSubjectIdChapterChapterIdxRouteImport } from './routes/subject.$subjectId.chapter.$chapterIdx'
 
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
@@ -46,6 +47,12 @@ const OnboardingBoardRoute = OnboardingBoardRouteImport.update({
   path: '/onboarding/board',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubjectSubjectIdChapterChapterIdxRoute =
+  SubjectSubjectIdChapterChapterIdxRouteImport.update({
+    id: '/chapter/$chapterIdx',
+    path: '/chapter/$chapterIdx',
+    getParentRoute: () => SubjectSubjectIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,7 +60,8 @@ export interface FileRoutesByFullPath {
   '/onboarding/board': typeof OnboardingBoardRoute
   '/onboarding/languages': typeof OnboardingLanguagesRoute
   '/onboarding/theme': typeof OnboardingThemeRoute
-  '/subject/$subjectId': typeof SubjectSubjectIdRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRouteWithChildren
+  '/subject/$subjectId/chapter/$chapterIdx': typeof SubjectSubjectIdChapterChapterIdxRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +69,8 @@ export interface FileRoutesByTo {
   '/onboarding/board': typeof OnboardingBoardRoute
   '/onboarding/languages': typeof OnboardingLanguagesRoute
   '/onboarding/theme': typeof OnboardingThemeRoute
-  '/subject/$subjectId': typeof SubjectSubjectIdRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRouteWithChildren
+  '/subject/$subjectId/chapter/$chapterIdx': typeof SubjectSubjectIdChapterChapterIdxRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,7 +79,8 @@ export interface FileRoutesById {
   '/onboarding/board': typeof OnboardingBoardRoute
   '/onboarding/languages': typeof OnboardingLanguagesRoute
   '/onboarding/theme': typeof OnboardingThemeRoute
-  '/subject/$subjectId': typeof SubjectSubjectIdRoute
+  '/subject/$subjectId': typeof SubjectSubjectIdRouteWithChildren
+  '/subject/$subjectId/chapter/$chapterIdx': typeof SubjectSubjectIdChapterChapterIdxRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +91,7 @@ export interface FileRouteTypes {
     | '/onboarding/languages'
     | '/onboarding/theme'
     | '/subject/$subjectId'
+    | '/subject/$subjectId/chapter/$chapterIdx'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +100,7 @@ export interface FileRouteTypes {
     | '/onboarding/languages'
     | '/onboarding/theme'
     | '/subject/$subjectId'
+    | '/subject/$subjectId/chapter/$chapterIdx'
   id:
     | '__root__'
     | '/'
@@ -97,6 +109,7 @@ export interface FileRouteTypes {
     | '/onboarding/languages'
     | '/onboarding/theme'
     | '/subject/$subjectId'
+    | '/subject/$subjectId/chapter/$chapterIdx'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,7 +118,7 @@ export interface RootRouteChildren {
   OnboardingBoardRoute: typeof OnboardingBoardRoute
   OnboardingLanguagesRoute: typeof OnboardingLanguagesRoute
   OnboardingThemeRoute: typeof OnboardingThemeRoute
-  SubjectSubjectIdRoute: typeof SubjectSubjectIdRoute
+  SubjectSubjectIdRoute: typeof SubjectSubjectIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -152,8 +165,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingBoardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subject/$subjectId/chapter/$chapterIdx': {
+      id: '/subject/$subjectId/chapter/$chapterIdx'
+      path: '/chapter/$chapterIdx'
+      fullPath: '/subject/$subjectId/chapter/$chapterIdx'
+      preLoaderRoute: typeof SubjectSubjectIdChapterChapterIdxRouteImport
+      parentRoute: typeof SubjectSubjectIdRoute
+    }
   }
 }
+
+interface SubjectSubjectIdRouteChildren {
+  SubjectSubjectIdChapterChapterIdxRoute: typeof SubjectSubjectIdChapterChapterIdxRoute
+}
+
+const SubjectSubjectIdRouteChildren: SubjectSubjectIdRouteChildren = {
+  SubjectSubjectIdChapterChapterIdxRoute:
+    SubjectSubjectIdChapterChapterIdxRoute,
+}
+
+const SubjectSubjectIdRouteWithChildren =
+  SubjectSubjectIdRoute._addFileChildren(SubjectSubjectIdRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -161,7 +193,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingBoardRoute: OnboardingBoardRoute,
   OnboardingLanguagesRoute: OnboardingLanguagesRoute,
   OnboardingThemeRoute: OnboardingThemeRoute,
-  SubjectSubjectIdRoute: SubjectSubjectIdRoute,
+  SubjectSubjectIdRoute: SubjectSubjectIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
