@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { applyTheme, resetProfile, useProfile } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Moon, Sun, ChevronRight, Languages, GraduationCap, Bell, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
@@ -64,7 +65,8 @@ function Account() {
       </section>
 
       <Button
-        onClick={() => {
+        onClick={async () => {
+          try { await supabase.auth.signOut(); } catch {}
           resetProfile();
           applyTheme("light");
           navigate({ to: "/" });

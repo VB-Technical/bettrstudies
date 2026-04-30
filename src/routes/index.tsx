@@ -1,8 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
 import { applyTheme, getProfile, setProfile } from "@/lib/store";
 import { Button } from "@/components/ui/button";
+import { lovable } from "@/integrations/lovable";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: Splash,
@@ -20,23 +23,75 @@ function Splash() {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
 
+  const [busy, setBusy] = useState<null | "google" | "guest">(null);
+
   useEffect(() => {
     const p = getProfile();
     applyTheme(p.theme);
     setLoaded(true);
-    if (p.onboarded && p.authed) {
-      navigate({ to: "/home" });
-    }
+
+    // Sync supabase session into local profile
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const u = session.user;
+        const next = setProfile({
+          authed: true,
+          guest: false,
+          name: (u.user_metadata?.full_name as string) || (u.user_metadata?.name as string) || u.email?.split("@")[0] || "Learner",
+          email: u.email ?? undefined,
+        });
+        if (next.onboarded) navigate({ to: "/home" });
+        else navigate({ to: "/onboarding/theme" });
+        return;
+      }
+      if (p.onboarded && p.authed) {
+        navigate({ to: "/home" });
+      }
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (session?.user) {
+        const u = session.user;
+        const next = setProfile({
+          authed: true,
+          guest: false,
+          name: (u.user_metadata?.full_name as string) || (u.user_metadata?.name as string) || u.email?.split("@")[0] || "Learner",
+          email: u.email ?? undefined,
+        });
+        navigate({ to: next.onboarded ? "/home" : "/onboarding/theme" });
+      }
+    });
+    return () => sub.subscription.unsubscribe();
   }, [navigate]);
 
-  const continueAs = (mode: "google" | "guest") => {
-    setProfile({
-      authed: true,
-      guest: mode === "guest",
-      name: mode === "guest" ? "Guest Learner" : "Aarav Sharma",
-      email: mode === "guest" ? undefined : "aarav@example.com",
-    });
-    navigate({ to: "/onboarding/theme" });
+  const continueAs = async (mode: "google" | "guest") => {
+    if (busy) return;
+    setBusy(mode);
+    try {
+      if (mode === "guest") {
+        setProfile({
+          authed: true,
+          guest: true,
+          name: "Guest Learner",
+          email: undefined,
+        });
+        navigate({ to: "/onboarding/theme" });
+        return;
+      }
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast.error("Google sign-in failed", { description: result.error.message });
+        setBusy(null);
+        return;
+      }
+      if (result.redirected) return; // browser navigating away
+      // Tokens set — onAuthStateChange will redirect.
+    } catch (e) {
+      toast.error("Sign-in error", { description: e instanceof Error ? e.message : String(e) });
+      setBusy(null);
+    }
   };
 
   return (
@@ -65,13 +120,15 @@ function Splash() {
         <div className="w-full space-y-3">
           <Button
             onClick={() => continueAs("google")}
+            disabled={busy !== null}
             className="w-full h-12 bg-white text-foreground hover:bg-white/95 font-semibold text-base shadow-elegant"
           >
-            <GoogleIcon />
-            Sign in with Google
+            {busy === "google" ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon />}
+            {busy === "google" ? "Signing in…" : "Sign in with Google"}
           </Button>
           <Button
             onClick={() => continueAs("guest")}
+            disabled={busy !== null}
             variant="ghost"
             className="w-full h-12 text-white hover:bg-white/10 font-semibold text-base"
           >
