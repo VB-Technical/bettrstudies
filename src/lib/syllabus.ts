@@ -26,7 +26,6 @@ export type SubjectIconKey =
 
 const ch = (title: string, brief: string, topics: string[]): Chapter => ({ title, brief, topics });
 
-// ---------- Maths (Class 10, common to CBSE & KSEEB) ----------
 const COMMON_MATH: Chapter[] = [
   ch("Real Numbers", "Euclid's algorithm, fundamental theorem of arithmetic, irrational numbers.", ["Euclid's Division Lemma", "HCF & LCM", "Irrational Numbers"]),
   ch("Polynomials", "Zeroes of polynomials and the relationship with coefficients.", ["Geometrical meaning", "Division algorithm", "Zeroes & coefficients"]),
@@ -42,7 +41,6 @@ const COMMON_MATH: Chapter[] = [
   ch("Probability", "Classical definition and simple problems.", ["Classical probability", "Sample space", "Events"]),
 ];
 
-// ---------- Science (Class 10) ----------
 const COMMON_SCIENCE: Chapter[] = [
   ch("Chemical Reactions and Equations", "Types of reactions and balancing equations.", ["Balancing", "Types of reactions", "Redox"]),
   ch("Acids, Bases and Salts", "pH, indicators, and important salts.", ["pH scale", "Indicators", "Common salts"]),
@@ -58,7 +56,6 @@ const COMMON_SCIENCE: Chapter[] = [
   ch("Our Environment", "Ecosystems and ozone layer.", ["Food chains", "Biodegradable waste", "Ozone"]),
 ];
 
-// ---------- Social Science ----------
 const COMMON_SOCIAL: Chapter[] = [
   ch("Nationalism in India", "Civil disobedience and the rise of national consciousness.", ["Non-cooperation", "Civil Disobedience", "Salt March"]),
   ch("Resources and Development", "Classification and conservation of resources.", ["Types of resources", "Land use", "Soil conservation"]),
@@ -68,7 +65,7 @@ const COMMON_SOCIAL: Chapter[] = [
   ch("Globalisation and the Indian Economy", "MNCs and global trade.", ["MNCs", "Liberalisation", "Trade barriers"]),
 ];
 
-// ---------- CBSE English (First Flight) ----------
+// CBSE English (First Flight)
 const ENGLISH_CBSE: Chapter[] = [
   ch("A Letter to God", "Faith, hope, and the irony of human nature.", ["Theme", "Characters", "Literary devices"]),
   ch("Nelson Mandela: Long Walk to Freedom", "Inauguration and the journey of freedom.", ["Context", "Key events"]),
@@ -81,8 +78,7 @@ const ENGLISH_CBSE: Chapter[] = [
   ch("The Proposal", "A one-act comic farce.", ["Drama", "Humor"]),
 ];
 
-// ---------- KSEEB English Second Language (Class 10, 2025-26) ----------
-// Sourced from KTBS textbooks (Part-1 + Part-2)
+// KSEEB English Second Language (Karnataka, 2025-26) — from KTBS textbooks
 const ENGLISH_KSEEB: Chapter[] = [
   ch("A Hero", "R.K. Narayan — Swami's overnight transformation into a hero.", ["Theme", "Characters", "Comprehension"]),
   ch("There's a Girl by the Tracks!", "True account of Baleshwar's brave rescue of Roma Talreja.", ["Plot", "Real-life heroism"]),
@@ -101,54 +97,9 @@ const ENGLISH_KSEEB: Chapter[] = [
   ch("Ulysses and the Cyclops", "Charles Lamb — Odysseus and Polyphemus.", ["Adventure", "Retelling"]),
 ];
 
-// ---------- KSEEB English Third Language (Class 10) ----------
-const ENGLISH_TL: Chapter[] = [
-  ch("Chanakya and Rakshasa", "Statecraft and wisdom in ancient India.", ["Plot", "Characters"]),
-  ch("Faithful Friends", "Poem on the value of true friendship.", ["Theme"]),
-  ch("At the Zoo", "Children's visit and observations of animals.", ["Vocabulary"]),
-  ch("The Tiger and the Deer", "Poem on the law of nature.", ["Imagery"]),
-  ch("Kashmir, the Garden of India", "Beauty and culture of Kashmir.", ["Description"]),
-  ch("Autumn Song", "Sarojini Naidu — seasons and feeling.", ["Poetry"]),
-  ch("The Two Great Musicians", "Bismillah Khan & Lata Mangeshkar.", ["Biography"]),
-  ch("Life in Banjarumale", "A self-sufficient tribal hamlet in Karnataka.", ["Article", "Eco-living"]),
-  ch("Plant Tree", "Poem celebrating tree planting.", ["Theme"]),
-  ch("Simpleton!", "Tale of a foolish younger cousin.", ["Folk tale"]),
-  ch("Sohrab and Rustum", "The tragic father–son combat.", ["Epic", "Tragedy"]),
-  ch("A Scene from Shakuntala", "Excerpt from Kalidasa's classic play.", ["Drama"]),
-];
-
-// ---------- Kannada First Language (KSEEB, 2025-26) ----------
+// Kannada First Language (KSEEB, 2025-26)
 const KANNADA_FL: Chapter[] = [
   ch("ಸಂಕಲ್ಪ ಗೀತೆ", "ಸಂಕಲ್ಪ ಮತ್ತು ದೃಢ ನಿಶ್ಚಯದ ಗೀತೆ.", ["ಭಾವಾರ್ಥ", "ಸಂದರ್ಭ"]),
   ch("ವ್ಯಾಘ್ರಗೀತೆ", "ಎ.ಎನ್. ಮೂರ್ತಿರಾವ್ ಅವರ ಪ್ರಸಿದ್ಧ ಬರಹ.", ["ಕಥಾಸಾರಾಂಶ", "ನೀತಿ"]),
   ch("ಭಾಗ್ಯಶಿಲ್ಪಿಗಳು", "ಸಮಾಜ ನಿರ್ಮಾಪಕರ ಪರಿಚಯ.", ["ವ್ಯಕ್ತಿಚಿತ್ರಣ"]),
-  ch("ಎದೆಗೆ ಬಿದ್ದ ಅಕ್ಷರ", "ದೇವನೂರ ಮಹಾದೇವ — ಶಿಕ್ಷಣದ ಪ್ರಭಾವ.", ["ಸ್ವಾನುಭವ", "ಶಿಕ್ಷಣ"]),
-  ch("ಯುದ್ಧ", "ಸಾರಾ ಅಬೂಬಕ್ಕರ್ — ಯುದ್ಧದ ಭೀಕರತೆ ಮತ್ತು ಮಾನವೀಯತೆ.", ["ಸಣ್ಣಕಥೆ", "ಮಾನವೀಯ ಮೌಲ್ಯ"]),
-  ch("ತಬರಿಯ ಕಥೆ", "ಪೂ. ತಿ. ನರಸಿಂಹಾಚಾರ್ — ಸಾಮಾಜಿಕ ಕಥೆ.", ["ಪಾತ್ರ", "ಸಮಾಜ"]),
-  ch("ಅಂಡಮಾನ್", "ಎ. ಕೃ. ರಾಮಾನುಜನ್ — ಪ್ರವಾಸ ಕಥನ.", ["ಪ್ರವಾಸ ಸಾಹಿತ್ಯ"]),
-  ch("ಆಗ್ನೇಯ ಏಷ್ಯಾದ ಕಡೆಗೆ", "ಶಿವರಾಮ ಕಾರಂತ — ಪ್ರವಾಸ ಅನುಭವ.", ["ಪ್ರವಾಸ", "ಸಂಸ್ಕೃತಿ"]),
-  ch("ಕೆಸರು", "ಕವನ — ಬದುಕಿನ ಪ್ರತಿಮೆ.", ["ಕವನ", "ಪ್ರತಿಮೆ"]),
-  ch("ವಚನಗಳು", "ಬಸವಣ್ಣ ಮುಂತಾದ ಶರಣರ ವಚನಗಳು.", ["ಭಕ್ತಿ", "ಸಮಾಜ"]),
-];
-
-// ---------- Kannada Second Language ----------
-const KANNADA_SL: Chapter[] = [
-  ch("ಗಿಳಿಯ ಮರದ ಗಿಳಿ", "ಪರಿಸರ ಮತ್ತು ಜೀವನದ ಸಂಬಂಧ.", ["ಪದಗಳ ಅರ್ಥ"]),
-  ch("ಆಸಿ-ಮಾಸಿ-ಕೃಷಿ", "ಕೃಷಿಯ ಮಹತ್ವ.", ["ಕೃಷಿ ಸಂಸ್ಕೃತಿ"]),
-  ch("ಗಾನಯೋಗಿ ಪಂಡಿತ ಪುಟ್ಟರಾಜ ಗವಾಯಿ", "ಪ್ರಸಿದ್ಧ ಗಾಯಕನ ಜೀವನ.", ["ವ್ಯಕ್ತಿ ಪರಿಚಯ"]),
-  ch("ಹಕ್ಕಿಗಳ ನಾಗರಿಕ ಜಗತ್ತು", "ಪಕ್ಷಿಗಳ ಬಗ್ಗೆ ವಿವರಣೆ.", ["ಪ್ರಕೃತಿ"]),
-  ch("ಕಾಳಿಂಗ-ಕೇರಳ", "ಗುರುರಾಜ ಕಾಯ್ಕಿಣಿ — ಕಥೆ.", ["ಸಣ್ಣ ಕಥೆ"]),
-  ch("ಗಂಗೆಯಲ್ಲಿ ದೀಪಮಾಲೆ", "ಜಿ.ಎಸ್. ಶಿವರುದ್ರಪ್ಪ — ಪ್ರಯಾಣದ ಅನುಭವ.", ["ಪ್ರವಾಸ"]),
-  ch("ನನ್ನ ಗೋಪಾಲ", "ಕುವೆಂಪು — ಭಾವಗೀತೆ.", ["ಭಕ್ತಿ"]),
-  ch("ಸೌಜನ್ಯ", "ಹಾ.ಮಾ. ನಾಯಕ — ಪ್ರಬಂಧ.", ["ಮೌಲ್ಯ"]),
-  ch("ಮೊಗ್ಗಿನ ಜಡೆ", "ಜನಪದ ಗೀತೆ.", ["ಜನಪದ"]),
-  ch("ವಚನಗಳು", "ಬಸವಣ್ಣ, ನೀಲಾಂಬಿಕೆ, ಅಕ್ಕಮಹಾದೇವಿ.", ["ವಚನ ಸಾಹಿತ್ಯ"]),
-];
-
-// ---------- Kannada Third Language ----------
-const KANNADA_TL: Chapter[] = [
-  ch("ನಾವೆಲ್ಲರು ಒಂದೇ ಜಾತಿ", "ಸಮಾನತೆಯ ಸಂದೇಶ.", ["ಮೌಲ್ಯ"]),
-  ch("ಕೊಡಗಿನ ಗೌರಮ್ಮ", "ಲೇಖಕಿಯ ಪರಿಚಯ.", ["ವ್ಯಕ್ತಿ ಪರಿಚಯ"]),
-  ch("ಭೂಮಿತಾಯಿ ಕುಡಿಗಳು", "ಭೂಮಿಯ ಮಕ್ಕಳಾಗಿ ಬದುಕು.", ["ಪ್ರಕೃತಿ"]),
-  ch("ತಿತ್ತೀನಾಳ ತಿಮ್ಮಪ್ಪ ಸಾಹುಕಾರರು", "ಗ್ರಾಮೀಣ ಜೀವನ ಚಿತ್ರ.", ["ಪಾತ್ರಚಿತ್ರಣ"]),
-  ch("ಧ್ವಜ ರಕ್ಷಣೆ", "ಎನ್.ಎಲ್.
+  ch("ಎದೆಗೆ ಬಿದ್ದ ಅಕ್ಷರ", "ದೇವನೂರ ಮಹ
