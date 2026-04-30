@@ -118,6 +118,7 @@ const KANNADA_SL: Chapter[] = [
   ch("ವಚನಗಳು", "ಬಸವಣ್ಣ, ಅಕ್ಕಮಹಾದೇವಿ.", ["ವಚನ ಸಾಹಿತ್ಯ"]),
 ];
 
+// Hindi (CBSE — Kshitij/Sparsh-style core selection used by mock)
 const HINDI_CH: Chapter[] = [
   ch("सूरदास के पद", "भक्ति काव्य का सौंदर्य।", ["भाव", "अलंकार"]),
   ch("तुलसीदास", "रामचरितमानस से अंश।", ["संदर्भ"]),
@@ -127,6 +128,109 @@ const HINDI_CH: Chapter[] = [
   ch("एक कहानी यह भी", "मन्नू भंडारी का संस्मरण।", ["मुख्य विचार"]),
 ];
 
+// Hindi First Language — KSEEB "Hindi Suman" 2025-26 (Parts 1 + 2 combined)
+const HINDI_FL: Chapter[] = [
+  ch("सारे जहाँ से अच्छा", "डॉ. इकबाल — देशभक्ति कविता।", ["कविता", "भाव"]),
+  ch("अकबरी लोटा", "अन्नपूर्णानंद वर्मा — हास्य कहानी।", ["कहानी", "पात्र"]),
+  ch("रुपया बोलता है!", "पांडेय बेचन शर्मा 'उग्र' — व्यंग्य निबंध।", ["निबंध"]),
+  ch("पिछड़ा आदमी", "सर्वेश्वर दयाल सक्सेना — समाज पर कविता।", ["कविता"]),
+  ch("महात्मा गाँधी", "सत्यकाम विद्यालंकार — जीवनी।", ["जीवनी"]),
+  ch("ऐसा था नेपोलियन (पूरक)", "नेपोलियन बोनापार्ट का व्यक्तित्व।", ["पूरक वाचन"]),
+  ch("आनंद के क्षण", "कन्हैयालाल मिश्र 'प्रभाकर' — निबंध।", ["निबंध"]),
+  ch("जीवन संदेश", "रामनरेश त्रिपाठी — कविता।", ["कविता"]),
+  ch("अपना-पराया", "जैनेंद्र — मार्मिक कहानी।", ["कहानी"]),
+  ch("परिश्रम सफलता की कुंजी है (पूरक)", "श्रम के महत्त्व पर निबंध।", ["पूरक वाचन"]),
+  ch("कर्नाटक कुलपुरोहित आलूर वेंकटराव", "गुरुनाथ जोशी — जीवनी।", ["जीवनी"]),
+  ch("आओ नवनिर्माण करें", "बालकृष्ण शर्मा 'नवीन' — कविता।", ["कविता"]),
+  ch("स्काउट (पूरक)", "स्काउट आंदोलन का परिचय।", ["पूरक वाचन"]),
+  ch("सदाचार का तावीज़", "हरिशंकर परसाई — व्यंग्य कथा।", ["व्यंग्य"]),
+  ch("एक कहानी यह भी", "मन्नू भंडारी — आत्मकथ्य।", ["आत्मकथ्य"]),
+  ch("अक्कमहादेवी के वचन", "अनुवाद: नंदिनी गुंडुराव — प्राचीन वचन।", ["वचन साहित्य"]),
+  ch("संत कवि रैदास (पूरक)", "रैदास का जीवन और भक्ति।", ["पूरक वाचन"]),
+  ch("लोकगीत", "भगवत शरण उपाध्याय — निबंध।", ["निबंध"]),
+  ch("समा बँध गया", "नगेंद्र भट्टाचार्य — यात्रा वृत्तांत।", ["यात्रा वृत्तांत"]),
+  ch("सुबह उठा तो धूप खिली थी", "अज्ञेय — कविता।", ["कविता"]),
+  ch("जो देखकर भी नहीं देखते (पूरक)", "दृष्टिकोण पर निबंध।", ["पूरक वाचन"]),
+  ch("सच्चा धर्म", "सेठ गोविंददास — एकांकी।", ["एकांकी"]),
+  ch("एक कुत्ता और एक मैना", "हजारी प्रसाद द्विवेदी — निबंध।", ["निबंध"]),
+  ch("दोहे", "कबीर, बिहारी, वृंद, रहीम — प्राचीन दोहे।", ["दोहे"]),
+];
+
+// Hindi Third Language — KSEEB "Hindi Vallari" 2025-26 (Parts 1 + 2 combined)
+const HINDI_TL: Chapter[] = [
+  ch("मातृभूमि", "मातृभूमि पर कविता।", ["कविता"]),
+  ch("कश्मीरी सेब", "मुंशी प्रेमचंद — कहानी।", ["कहानी"]),
+  ch("गिल्लू", "महादेवी वर्मा — रेखाचित्र।", ["रेखाचित्र"]),
+  ch("अभिनव मनुष्य", "आधुनिक मानव पर कविता।", ["कविता"]),
+  ch("मेरा बचपन", "आत्मकथा अंश।", ["आत्मकथा"]),
+  ch("बसंत की सच्चाई", "एकांकी।", ["एकांकी"]),
+  ch("तुलसी के दोहे", "तुलसीदास — दोहे।", ["दोहा"]),
+  ch("इंटरनेट क्रांति", "सूचना तकनीक पर निबंध।", ["निबंध"]),
+  ch("ईमानदारों के सम्मेलन में", "व्यंग्य रचना।", ["व्यंग्य"]),
+  ch("दुनिया में पहला मकान", "डॉ. विजया गुप्ता — लेख।", ["लेख"]),
+  ch("समय की पहचान", "समय के मूल्य पर कविता।", ["कविता"]),
+  ch("रोबोट", "विज्ञान कथा।", ["कहानी"]),
+  ch("महिला की साहसगाथा", "व्यक्ति परिचय।", ["जीवनी"]),
+  ch("सूर-श्याम", "सूरदास — कृष्ण भक्ति पद।", ["पद"]),
+  ch("कर्नाटक संपदा", "कर्नाटक की विरासत — निबंध।", ["निबंध"]),
+  ch("बाल-शक्ति", "लघु नाटिका।", ["नाटिका"]),
+  ch("कोशिश करनेवालों की हार नहीं होती", "हरिवंशराय बच्चन — प्रेरक कविता।", ["कविता"]),
+];
+
+// Sanskrit First Language — "Samskrutha Nandini-3" KTBS 2025-26 (Parts 1 + 2 combined)
+const SANSKRIT_FL: Chapter[] = [
+  ch("उपनिषद्वचनम्", "वेदान्तवाणी — उपनिषद् से चयनित श्लोक।", ["श्लोक", "वेदान्त"]),
+  ch("त्यागधनः", "नीतिकथा — त्याग का महत्त्व।", ["नीतिकथा"]),
+  ch("विसर्गसन्धिः", "व्याकरण — विसर्ग सन्धि के नियम।", ["व्याकरण"]),
+  ch("भारतीयविज्ञानम्", "सम्भाषणम् — प्राचीन भारतीय विज्ञान।", ["सम्भाषण"]),
+  ch("ज्ञानदीपः", "व्यक्तिपरिचयः — ज्ञानपीठ पुरस्कार विजेता।", ["जीवनी"]),
+  ch("समासः", "व्याकरण — समास के प्रकार।", ["व्याकरण"]),
+  ch("अभयदायिनी", "आधुनिक नाटक — वीरनारी।", ["नाटक"]),
+  ch("कृदन्तः", "गद्यांश एवं कृदन्त प्रत्यय।", ["व्याकरण"]),
+  ch("भारतेः महिमा", "भारत की महिमा पर रचना।", ["गद्य"]),
+  ch("अलङ्कारः 1-2", "अलङ्कार — परिभाषा एवं प्रकार।", ["व्याकरण"]),
+  ch("सुभाषितानि (कण्ठपाठः)", "नीतिपूर्ण सुभाषित — कण्ठस्थ करणीय।", ["सुभाषित"]),
+  ch("छन्दः", "छन्द शास्त्र का परिचय।", ["व्याकरण"]),
+  ch("पत्रलेखनम्", "संस्कृत में पत्र-लेखन।", ["लेखन"]),
+  ch("प्रबन्धः", "निबन्ध-लेखन।", ["लेखन"]),
+  ch("विवेकोदयः", "विवेक का उदय — कथा।", ["कथा"]),
+  ch("मन्थरा निर्ममथ", "रामायण से प्रसंग।", ["कथा"]),
+  ch("प्रयोगः", "धातु-प्रयोग एवं रूप।", ["व्याकरण"]),
+  ch("कर्णभारम्", "भास का प्रसिद्ध एकांकी नाटक।", ["नाटक"]),
+  ch("भारतीयभावना", "देशभक्ति पद्य।", ["पद्य"]),
+  ch("नाट्यांशाः", "नाट्यशास्त्र — रसों का परिचय।", ["नाट्यशास्त्र"]),
+  ch("भीष्मोक्तयः", "महाभारत — भीष्म के उपदेश।", ["गद्य"]),
+  ch("नगाधिराजः (पूरक)", "हिमालय पर रचना।", ["पूरक पाठ"]),
+  ch("भगवान् रमणमहर्षिः (पूरक)", "रमण महर्षि का जीवन।", ["पूरक पाठ"]),
+];
+
+// Sanskrit Third Language — "Samskrutha Rashmi-5" KTBS 2025-26 (Parts 1 + 2 combined)
+const SANSKRIT_TL: Chapter[] = [
+  ch("प्रणतिः / प्रगतिः", "प्रार्थना पद्य — कण्ठपाठ।", ["पद्य"]),
+  ch("अपूर्वमेला", "गद्य सम्भाषण — पुस्तक मेला।", ["सम्भाषण"]),
+  ch("सन्धिः", "व्याकरण — सन्धि के नियम।", ["व्याकरण"]),
+  ch("मिथ्याभिमानः", "गद्य — झूठे अभिमान की कथा।", ["कथा"]),
+  ch("कृदन्तः", "व्याकरण — कृदन्त प्रत्यय।", ["व्याकरण"]),
+  ch("जीवनयोगः", "गीता आधारित पद्य।", ["पद्य"]),
+  ch("एकाग्रता", "एकाग्रता पर कथा।", ["कथा"]),
+  ch("समासः", "समास का परिचय।", ["व्याकरण"]),
+  ch("इन्दुः क्षीरनिधाविव", "उपमा अलङ्कार पद्य।", ["पद्य"]),
+  ch("कारकम्", "कारक एवं विभक्ति।", ["व्याकरण"]),
+  ch("अलङ्कारः", "अलङ्कार के प्रकार।", ["व्याकरण"]),
+  ch("छन्दः", "छन्द का परिचय।", ["व्याकरण"]),
+  ch("उभयभारती (पूरक)", "उभय-भारती का व्यक्ति परिचय।", ["पूरक पाठ"]),
+  ch("यदुगिरिः", "गद्य — यदुगिरि क्षेत्र का वर्णन।", ["गद्य"]),
+  ch("सूक्तिपीयूषम्", "पद्य — कण्ठपाठ करणीय सुभाषित।", ["पद्य"]),
+  ch("मुद्राङ्गुलीयकम्", "चम्पू — कथा।", ["चम्पू"]),
+  ch("सनातनी नो बध्नाति", "पद्य — सनातन मूल्य।", ["पद्य"]),
+  ch("दाने सर्वं प्रतिष्ठितम्", "नाटक — दान का महत्त्व।", ["नाटक"]),
+  ch("तद्धितः", "व्याकरण — तद्धित प्रत्यय।", ["व्याकरण"]),
+  ch("अनुवादः", "व्याकरण — अनुवाद अभ्यास।", ["व्याकरण"]),
+  ch("पत्राणि", "पत्र-लेखन।", ["लेखन"]),
+  ch("प्रबन्धाः", "निबन्ध-लेखन।", ["लेखन"]),
+  ch("विक्रमः वेतालश्च (पूरक)", "विक्रम-बेताल कथा।", ["पूरक पाठ"]),
+];
+
 const ELECTIVE_CH: Chapter[] = [
   ch("Introduction to Computer Applications", "Hardware, software, and networks.", ["Hardware", "OS basics"]),
   ch("Web Technologies", "HTML, CSS for the modern web.", ["HTML", "CSS"]),
@@ -134,10 +238,30 @@ const ELECTIVE_CH: Chapter[] = [
   ch("Cyber Safety", "Staying safe online.", ["Passwords", "Phishing"]),
 ];
 
-export function getSubjects(board: Board, _medium?: string): Subject[] {
-  const secondName = board === "cbse" ? "Hindi" : "Kannada";
-  // For Karnataka board, default to Kannada Second Language chapters; FL/TL also represented.
-  const secondChapters = board === "cbse" ? HINDI_CH : KANNADA_SL;
+// Map a chosen language id (from onboarding) to the matching chapter set.
+function chaptersForLanguage(lang?: string): Chapter[] | null {
+  switch (lang) {
+    case "kannada": return KANNADA_SL;
+    case "kannada-fl": return KANNADA_FL;
+    case "hindi": return HINDI_CH;
+    case "hindi-fl": return HINDI_FL;
+    case "hindi-tl": return HINDI_TL;
+    case "sanskrit": return SANSKRIT_TL;
+    case "sanskrit-fl": return SANSKRIT_FL;
+    case "sanskrit-tl": return SANSKRIT_TL;
+    default: return null;
+  }
+}
+
+export function getSubjects(board: Board, _medium?: string, secondLang?: string): Subject[] {
+  const chosen = chaptersForLanguage(secondLang);
+  const secondName = (() => {
+    if (secondLang?.startsWith("hindi")) return "Hindi";
+    if (secondLang?.startsWith("sanskrit")) return "Sanskrit";
+    if (secondLang?.startsWith("kannada")) return "Kannada";
+    return board === "cbse" ? "Hindi" : "Kannada";
+  })();
+  const secondChapters = chosen ?? (board === "cbse" ? HINDI_CH : KANNADA_SL);
   const englishChapters = board === "cbse" ? ENGLISH_CBSE : ENGLISH_KSEEB;
   return [
     { id: "english", name: "English", colorVar: "subject-english", iconKey: "english", chapters: englishChapters },
@@ -149,9 +273,13 @@ export function getSubjects(board: Board, _medium?: string): Subject[] {
   ];
 }
 
-// Expose Kannada FL as an additional dataset (used when medium = Kannada FL).
+// Expose datasets for any consumer that needs the raw chapter lists.
 export const KANNADA_FIRST_LANGUAGE = KANNADA_FL;
+export const HINDI_FIRST_LANGUAGE = HINDI_FL;
+export const HINDI_THIRD_LANGUAGE = HINDI_TL;
+export const SANSKRIT_FIRST_LANGUAGE = SANSKRIT_FL;
+export const SANSKRIT_THIRD_LANGUAGE = SANSKRIT_TL;
 
-export function getSubject(board: Board, id: string): Subject | undefined {
-  return getSubjects(board).find((s) => s.id === id);
+export function getSubject(board: Board, id: string, secondLang?: string): Subject | undefined {
+  return getSubjects(board, undefined, secondLang).find((s) => s.id === id);
 }
