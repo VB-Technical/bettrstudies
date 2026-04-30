@@ -120,13 +120,15 @@ function Splash() {
         <div className="w-full space-y-3">
           <Button
             onClick={() => continueAs("google")}
+            disabled={busy !== null}
             className="w-full h-12 bg-white text-foreground hover:bg-white/95 font-semibold text-base shadow-elegant"
           >
-            <GoogleIcon />
-            Sign in with Google
+            {busy === "google" ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon />}
+            {busy === "google" ? "Signing in…" : "Sign in with Google"}
           </Button>
           <Button
             onClick={() => continueAs("guest")}
+            disabled={busy !== null}
             variant="ghost"
             className="w-full h-12 text-white hover:bg-white/10 font-semibold text-base"
           >
