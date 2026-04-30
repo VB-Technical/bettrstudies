@@ -64,7 +64,8 @@ function Account() {
       </section>
 
       <Button
-        onClick={() => {
+        onClick={async () => {
+          try { await supabase.auth.signOut(); } catch {}
           resetProfile();
           applyTheme("light");
           navigate({ to: "/" });
