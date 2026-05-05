@@ -21,7 +21,7 @@ function ChapterPage() {
   const [profile] = useProfile();
   useProgressTick();
 
-  const subject = profile.board ? getSubject(profile.board, subjectId) : undefined;
+  const subject = profile.board ? getSubject(profile.board, subjectId, profile.secondLang, profile.thirdLang) : undefined;
   const chapter = subject?.chapters[idx];
 
   const [audioPlaying, setAudioPlaying] = useState(false);

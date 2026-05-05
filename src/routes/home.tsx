@@ -23,8 +23,8 @@ function Home() {
   }, [navigate]);
 
   const subjects = useMemo(
-    () => (profile.board ? getSubjects(profile.board) : []),
-    [profile.board]
+    () => (profile.board ? getSubjects(profile.board, profile.medium, profile.secondLang, profile.thirdLang) : []),
+    [profile.board, profile.medium, profile.secondLang, profile.thirdLang]
   );
 
   const overall = useMemo(() => {
