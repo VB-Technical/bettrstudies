@@ -10,6 +10,7 @@ import { Download, FileText, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { jsPDF } from "jspdf";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/writing-exam")({
   component: WritingExam,
@@ -24,21 +25,26 @@ function WritingExam() {
 
   const subject = subjects.find((s) => s.id === subjectId);
 
-  const generate = () => {
+  const generate = async () => {
     if (!subject) return;
     setGenerating(true);
-    setTimeout(() => {
-      try {
-        const boardName = profile.board === "cbse" ? "CBSE" : "Karnataka State";
-        const chapters = subject.chapters.map((c) => c.title);
-        renderPaperPdf(boardName, subject.name, chapters, `${subject.id}-board-paper.pdf`);
-        toast.success("Question paper generated");
-      } catch (e) {
-        toast.error("Failed to generate paper");
-      } finally {
-        setGenerating(false);
-      }
-    }, 600);
+    const boardName = profile.board === "cbse" ? "CBSE" : "Karnataka State";
+    const chapters = subject.chapters.map((c) => c.title);
+    try {
+      toast.info("Generating questions with AI…");
+      const { data, error } = await supabase.functions.invoke("generate-paper", {
+        body: { board: boardName, subject: subject.name, chapters },
+      });
+      if (error) throw error;
+      if (!data?.sections?.length) throw new Error("Empty paper returned");
+      renderPaperPdf(boardName, subject.name, data.sections, `${subject.id}-board-paper.pdf`);
+      toast.success("Question paper generated");
+    } catch (e: any) {
+      const msg = e?.context?.error || e?.message || "Failed to generate paper";
+      toast.error("Failed to generate paper", { description: msg });
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
@@ -120,11 +126,12 @@ function WritingExam() {
   );
 }
 
-function pick<T>(arr: T[], i: number): T {
-  return arr[i % arr.length];
+interface PaperSection {
+  title: string;
+  questions: string[];
 }
 
-function renderPaperPdf(board: string, subject: string, chapters: string[], filename: string) {
+function renderPaperPdf(board: string, subject: string, sections: PaperSection[], filename: string) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -139,17 +146,18 @@ function renderPaperPdf(board: string, subject: string, chapters: string[], file
     }
   };
 
-  const writeLine = (text: string, opts: { size?: number; bold?: boolean; gap?: number; align?: "left" | "center" } = {}) => {
+  const writeLine = (text: string, opts: { size?: number; bold?: boolean; gap?: number; align?: "left" | "center"; indent?: number } = {}) => {
     const size = opts.size ?? 11;
+    const indent = opts.indent ?? 0;
     doc.setFont("helvetica", opts.bold ? "bold" : "normal");
     doc.setFontSize(size);
-    const lines = doc.splitTextToSize(text, maxW) as string[];
+    const lines = doc.splitTextToSize(text, maxW - indent) as string[];
     for (const line of lines) {
       ensureSpace(size + 4);
       if (opts.align === "center") {
         doc.text(line, pageW / 2, y, { align: "center" });
       } else {
-        doc.text(line, margin, y);
+        doc.text(line, margin + indent, y);
       }
       y += size + 4;
     }
@@ -159,7 +167,7 @@ function renderPaperPdf(board: string, subject: string, chapters: string[], file
   // Header
   writeLine(`${board} • Class 10 • ${subject}`, { size: 14, bold: true, align: "center" });
   writeLine("Mock Question Paper (2025-26)", { size: 12, bold: true, align: "center", gap: 4 });
-  writeLine("Time: 3 hours                                                                Max Marks: 80", { size: 10, align: "center", gap: 6 });
+  writeLine("Time: 3 hours                                 Max Marks: 80", { size: 10, align: "center", gap: 6 });
   doc.setDrawColor(150);
   ensureSpace(10);
   doc.line(margin, y, pageW - margin, y);
@@ -168,50 +176,20 @@ function renderPaperPdf(board: string, subject: string, chapters: string[], file
   writeLine("General Instructions:", { size: 11, bold: true });
   [
     "1. All questions are compulsory.",
-    "2. Section A carries 1 mark each (MCQ / Fill in the blanks).",
-    "3. Section B carries 2 marks each (Very Short Answer).",
-    "4. Section C carries 3 marks each (Short Answer).",
-    "5. Section D carries 5 marks each (Long Answer).",
+    "2. Section A: 1 mark each.  Section B: 2 marks.  Section C: 3 marks.  Section D: 5 marks.",
+    "3. Internal choice is provided in Section D.",
   ].forEach((l) => writeLine(l, { size: 10 }));
   y += 8;
-
-  const sections: { title: string; count: number; marks: number; build: (i: number) => string }[] = [
-    {
-      title: "SECTION A — Multiple Choice / Fill in the blanks (1 mark × 20 = 20)",
-      count: 20,
-      marks: 1,
-      build: (i) => `${i + 1}. Define / identify a key term from the chapter "${pick(chapters, i)}".`,
-    },
-    {
-      title: "SECTION B — Very Short Answer (2 marks × 6 = 12)",
-      count: 6,
-      marks: 2,
-      build: (i) => `${i + 1}. Briefly explain an important concept from "${pick(chapters, i + 3)}". (2)`,
-    },
-    {
-      title: "SECTION C — Short Answer (3 marks × 7 = 21)",
-      count: 7,
-      marks: 3,
-      build: (i) => `${i + 1}. Discuss with an example a major idea presented in "${pick(chapters, i + 1)}". (3)`,
-    },
-    {
-      title: "SECTION D — Long Answer (5 marks × 7 = 35) — Internal choice provided",
-      count: 7,
-      marks: 5,
-      build: (i) =>
-        `${i + 1}. Write a detailed answer based on "${pick(chapters, i + 2)}".\n   OR\n   Write a detailed answer based on "${pick(chapters, i + 5)}". (5)`,
-    },
-  ];
 
   sections.forEach((s) => {
     y += 6;
     writeLine(s.title, { size: 11, bold: true, gap: 4 });
-    for (let i = 0; i < s.count; i++) {
-      writeLine(s.build(i), { size: 10, gap: 2 });
-    }
+    s.questions.forEach((q) => {
+      writeLine(q, { size: 10, gap: 3, indent: 8 });
+    });
   });
 
-  // Footer on last page
+  // Footer
   y += 10;
   ensureSpace(20);
   doc.setDrawColor(180);
@@ -221,4 +199,5 @@ function renderPaperPdf(board: string, subject: string, chapters: string[], file
 
   doc.save(filename);
 }
+
 
