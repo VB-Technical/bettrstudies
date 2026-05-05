@@ -10,6 +10,7 @@ import { Download, FileText, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { jsPDF } from "jspdf";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/writing-exam")({
   component: WritingExam,
