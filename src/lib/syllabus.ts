@@ -253,24 +253,49 @@ function chaptersForLanguage(lang?: string): Chapter[] | null {
   }
 }
 
-export function getSubjects(board: Board, _medium?: string, secondLang?: string): Subject[] {
-  const chosen = chaptersForLanguage(secondLang);
-  const secondName = (() => {
-    if (secondLang?.startsWith("hindi")) return "Hindi";
-    if (secondLang?.startsWith("sanskrit")) return "Sanskrit";
-    if (secondLang?.startsWith("kannada")) return "Kannada";
-    return board === "cbse" ? "Hindi" : "Kannada";
-  })();
-  const secondChapters = chosen ?? (board === "cbse" ? HINDI_CH : KANNADA_SL);
+function nameForLanguage(lang?: string, fallback = "Language"): string {
+  if (!lang || lang === "none") return fallback;
+  if (lang.startsWith("hindi")) return "Hindi";
+  if (lang.startsWith("sanskrit")) return "Sanskrit";
+  if (lang.startsWith("kannada")) return "Kannada";
+  if (lang === "english") return "English";
+  if (lang === "urdu") return "Urdu";
+  return fallback;
+}
+
+export function getSubjects(
+  board: Board,
+  _medium?: string,
+  secondLang?: string,
+  thirdLang?: string,
+): Subject[] {
+  const secondChapters = chaptersForLanguage(secondLang) ?? (board === "cbse" ? HINDI_CH : KANNADA_SL);
+  const secondName = nameForLanguage(secondLang, board === "cbse" ? "Hindi" : "Kannada");
   const englishChapters = board === "cbse" ? ENGLISH_CBSE : ENGLISH_KSEEB;
-  return [
+
+  const subjects: Subject[] = [
     { id: "english", name: "English", colorVar: "subject-english", iconKey: "english", chapters: englishChapters },
     { id: "second-lang", name: secondName, colorVar: "subject-language", iconKey: "language", chapters: secondChapters },
+  ];
+
+  if (thirdLang && thirdLang !== "none") {
+    const thirdChapters = chaptersForLanguage(thirdLang) ?? (thirdLang === "english" ? englishChapters : secondChapters);
+    subjects.push({
+      id: "third-lang",
+      name: nameForLanguage(thirdLang, "Third Language"),
+      colorVar: "subject-language",
+      iconKey: "language",
+      chapters: thirdChapters,
+    });
+  }
+
+  subjects.push(
     { id: "math", name: "Mathematics", colorVar: "subject-math", iconKey: "math", chapters: COMMON_MATH },
     { id: "science", name: "Science", colorVar: "subject-science", iconKey: "science", chapters: COMMON_SCIENCE },
     { id: "social", name: "Social Science", colorVar: "subject-social", iconKey: "social", chapters: COMMON_SOCIAL },
     { id: "elective", name: "Elective (Computer Apps)", colorVar: "subject-elective", iconKey: "elective", chapters: ELECTIVE_CH },
-  ];
+  );
+  return subjects;
 }
 
 // Expose datasets for any consumer that needs the raw chapter lists.
