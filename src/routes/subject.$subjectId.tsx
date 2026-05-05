@@ -16,7 +16,7 @@ function SubjectPage() {
   const [profile] = useProfile();
   useProgressTick();
 
-  const subject = profile.board ? getSubject(profile.board, subjectId) : undefined;
+  const subject = profile.board ? getSubject(profile.board, subjectId, profile.secondLang, profile.thirdLang) : undefined;
   if (!subject) {
     return (
       <AppShell>
