@@ -28,15 +28,17 @@ function WritingExam() {
     if (!subject) return;
     setGenerating(true);
     setTimeout(() => {
-      const blob = new Blob([buildPaper(profile.board === "cbse" ? "CBSE" : "Karnataka State", subject.name, subject.chapters.map((c) => c.title))], { type: "application/pdf" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${subject.id}-board-paper.pdf`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-      setGenerating(false);
-      toast.success("Question paper generated");
-    }, 1100);
+      try {
+        const boardName = profile.board === "cbse" ? "CBSE" : "Karnataka State";
+        const chapters = subject.chapters.map((c) => c.title);
+        renderPaperPdf(boardName, subject.name, chapters, `${subject.id}-board-paper.pdf`);
+        toast.success("Question paper generated");
+      } catch (e) {
+        toast.error("Failed to generate paper");
+      } finally {
+        setGenerating(false);
+      }
+    }, 600);
   };
 
   return (
