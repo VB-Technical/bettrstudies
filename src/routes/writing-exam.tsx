@@ -25,21 +25,26 @@ function WritingExam() {
 
   const subject = subjects.find((s) => s.id === subjectId);
 
-  const generate = () => {
+  const generate = async () => {
     if (!subject) return;
     setGenerating(true);
-    setTimeout(() => {
-      try {
-        const boardName = profile.board === "cbse" ? "CBSE" : "Karnataka State";
-        const chapters = subject.chapters.map((c) => c.title);
-        renderPaperPdf(boardName, subject.name, chapters, `${subject.id}-board-paper.pdf`);
-        toast.success("Question paper generated");
-      } catch (e) {
-        toast.error("Failed to generate paper");
-      } finally {
-        setGenerating(false);
-      }
-    }, 600);
+    const boardName = profile.board === "cbse" ? "CBSE" : "Karnataka State";
+    const chapters = subject.chapters.map((c) => c.title);
+    try {
+      toast.info("Generating questions with AI…");
+      const { data, error } = await supabase.functions.invoke("generate-paper", {
+        body: { board: boardName, subject: subject.name, chapters },
+      });
+      if (error) throw error;
+      if (!data?.sections?.length) throw new Error("Empty paper returned");
+      renderPaperPdf(boardName, subject.name, data.sections, `${subject.id}-board-paper.pdf`);
+      toast.success("Question paper generated");
+    } catch (e: any) {
+      const msg = e?.context?.error || e?.message || "Failed to generate paper";
+      toast.error("Failed to generate paper", { description: msg });
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
