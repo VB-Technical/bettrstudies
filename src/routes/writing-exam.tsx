@@ -9,6 +9,7 @@ import { getSubjects } from "@/lib/syllabus";
 import { Download, FileText, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { jsPDF } from "jspdf";
 
 export const Route = createFileRoute("/writing-exam")({
   component: WritingExam,
