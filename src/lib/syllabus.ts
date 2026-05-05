@@ -305,6 +305,6 @@ export const HINDI_THIRD_LANGUAGE = HINDI_TL;
 export const SANSKRIT_FIRST_LANGUAGE = SANSKRIT_FL;
 export const SANSKRIT_THIRD_LANGUAGE = SANSKRIT_TL;
 
-export function getSubject(board: Board, id: string, secondLang?: string): Subject | undefined {
-  return getSubjects(board, undefined, secondLang).find((s) => s.id === id);
+export function getSubject(board: Board, id: string, secondLang?: string, thirdLang?: string): Subject | undefined {
+  return getSubjects(board, undefined, secondLang, thirdLang).find((s) => s.id === id);
 }
