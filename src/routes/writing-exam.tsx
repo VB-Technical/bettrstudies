@@ -107,7 +107,7 @@ function WritingExam() {
 
       <Button onClick={generate} disabled={!subject || generating} className="mt-5 w-full h-12 bg-gradient-primary text-primary-foreground shadow-elegant">
         {generating ? <Sparkles className="h-4 w-4 animate-pulse" /> : <Download className="h-4 w-4" />}
-        {generating ? "Generating paper…" : "Generate & download paper (PDF)"}
+        {generating ? "Generating paper…" : "Generate & download paper (.txt)"}
       </Button>
 
       <div className="mt-6">
