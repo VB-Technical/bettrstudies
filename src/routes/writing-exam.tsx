@@ -36,8 +36,14 @@ function WritingExam() {
       });
       if (error) throw error;
       if (!data?.sections?.length) throw new Error("Empty paper returned");
-      renderPaperPdf(boardName, subject.name, data.sections, `${subject.id}-board-paper.pdf`);
-      toast.success("Question paper generated");
+      downloadPaperTxt(boardName, subject.name, data.sections, `${subject.id}-board-paper.txt`);
+      toast.success("Question paper downloaded as .txt", {
+        description: "Convert to PDF at iLovePDF →",
+        action: {
+          label: "Open iLovePDF",
+          onClick: () => window.open("https://www.ilovepdf.com/txt_to_pdf", "_blank"),
+        },
+      });
     } catch (e: any) {
       const msg = e?.context?.error || e?.message || "Failed to generate paper";
       toast.error("Failed to generate paper", { description: msg });
