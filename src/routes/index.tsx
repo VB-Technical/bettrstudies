@@ -69,10 +69,16 @@ function Splash() {
     setBusy(mode);
     try {
       if (mode === "guest") {
+        const raw = window.prompt("What's your name?", "");
+        const name = (raw ?? "").trim();
+        if (!name) {
+          setBusy(null);
+          return;
+        }
         setProfile({
           authed: true,
           guest: true,
-          name: "Guest Learner",
+          name,
           email: undefined,
         });
         navigate({ to: "/onboarding/theme" });
