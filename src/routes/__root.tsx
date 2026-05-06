@@ -1,5 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { applyTheme, getProfile } from "@/lib/store";
 
 import appCss from "../styles.css?url";
 
@@ -68,6 +70,16 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  useEffect(() => {
+    applyTheme(getProfile().theme);
+    const h = () => applyTheme(getProfile().theme);
+    window.addEventListener("bettr:store", h);
+    window.addEventListener("storage", h);
+    return () => {
+      window.removeEventListener("bettr:store", h);
+      window.removeEventListener("storage", h);
+    };
+  }, []);
   return (
     <>
       <Outlet />
