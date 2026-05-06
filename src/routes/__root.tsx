@@ -1,7 +1,5 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { applyTheme, getProfile } from "@/lib/store";
 
 import appCss from "../styles.css?url";
 
@@ -32,13 +30,17 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Bettr — Class 10 Companion (CBSE & State)" },
+      { title: "Bettr" },
       { name: "description", content: "Bettr is a Class 10 study companion for CBSE and Karnataka State Board: AI notes check, mind maps, study songs, and full board exam simulations." },
       { name: "theme-color", content: "#7c3aed" },
-      { property: "og:title", content: "Bettr — Class 10 Companion" },
-      { property: "og:description", content: "AI-powered Class 10 prep for CBSE & Karnataka State Board." },
+      { property: "og:title", content: "Bettr" },
+      { property: "og:description", content: "Bettr is a Class 10 study companion for CBSE and Karnataka State Board: AI notes check, mind maps, study songs, and full board exam simulations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Bettr" },
+      { name: "twitter:description", content: "Bettr is a Class 10 study companion for CBSE and Karnataka State Board: AI notes check, mind maps, study songs, and full board exam simulations." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8c50afd9-fa71-48aa-96a0-b9e8b8e90018" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8c50afd9-fa71-48aa-96a0-b9e8b8e90018" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -70,16 +72,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  useEffect(() => {
-    applyTheme(getProfile().theme);
-    const h = () => applyTheme(getProfile().theme);
-    window.addEventListener("bettr:store", h);
-    window.addEventListener("storage", h);
-    return () => {
-      window.removeEventListener("bettr:store", h);
-      window.removeEventListener("storage", h);
-    };
-  }, []);
   return (
     <>
       <Outlet />
