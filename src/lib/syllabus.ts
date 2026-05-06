@@ -263,29 +263,61 @@ function nameForLanguage(lang?: string, fallback = "Language"): string {
   return fallback;
 }
 
+function subjectForLanguage(
+  lang: string | undefined,
+  slot: "first-lang" | "second-lang" | "third-lang",
+  board: Board,
+  englishChapters: Chapter[],
+): Subject | null {
+  if (!lang || lang === "none") return null;
+  let chapters: Chapter[];
+  if (lang === "english") {
+    chapters = englishChapters;
+  } else {
+    chapters = chaptersForLanguage(lang) ?? (board === "cbse" ? HINDI_CH : KANNADA_SL);
+  }
+  const isEnglish = lang === "english";
+  return {
+    id: slot,
+    name: nameForLanguage(lang, "Language"),
+    colorVar: isEnglish ? "subject-english" : "subject-language",
+    iconKey: isEnglish ? "english" : "language",
+    chapters,
+  };
+}
+
 export function getSubjects(
   board: Board,
   _medium?: string,
   secondLang?: string,
   thirdLang?: string,
+  firstLang?: string,
 ): Subject[] {
-  const secondChapters = chaptersForLanguage(secondLang) ?? (board === "cbse" ? HINDI_CH : KANNADA_SL);
-  const secondName = nameForLanguage(secondLang, board === "cbse" ? "Hindi" : "Kannada");
   const englishChapters = board === "cbse" ? ENGLISH_CBSE : ENGLISH_KSEEB;
 
-  const subjects: Subject[] = [
-    { id: "english", name: "English", colorVar: "subject-english", iconKey: "english", chapters: englishChapters },
-    { id: "second-lang", name: secondName, colorVar: "subject-language", iconKey: "language", chapters: secondChapters },
-  ];
+  const subjects: Subject[] = [];
+  const seen = new Set<string>();
+  const addLang = (lang: string | undefined, slot: "first-lang" | "second-lang" | "third-lang") => {
+    const subj = subjectForLanguage(lang, slot, board, englishChapters);
+    if (!subj) return;
+    const key = subj.name.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    subjects.push(subj);
+  };
 
-  if (thirdLang && thirdLang !== "none") {
-    const thirdChapters = chaptersForLanguage(thirdLang) ?? (thirdLang === "english" ? englishChapters : secondChapters);
+  addLang(firstLang, "first-lang");
+  addLang(secondLang, "second-lang");
+  addLang(thirdLang, "third-lang");
+
+  // Fallback: if user hasn't chosen any languages yet, show English as default.
+  if (subjects.length === 0) {
     subjects.push({
-      id: "third-lang",
-      name: nameForLanguage(thirdLang, "Third Language"),
-      colorVar: "subject-language",
-      iconKey: "language",
-      chapters: thirdChapters,
+      id: "english",
+      name: "English",
+      colorVar: "subject-english",
+      iconKey: "english",
+      chapters: englishChapters,
     });
   }
 
@@ -305,6 +337,7 @@ export const HINDI_THIRD_LANGUAGE = HINDI_TL;
 export const SANSKRIT_FIRST_LANGUAGE = SANSKRIT_FL;
 export const SANSKRIT_THIRD_LANGUAGE = SANSKRIT_TL;
 
-export function getSubject(board: Board, id: string, secondLang?: string, thirdLang?: string): Subject | undefined {
-  return getSubjects(board, undefined, secondLang, thirdLang).find((s) => s.id === id);
+export function getSubject(board: Board, id: string, secondLang?: string, thirdLang?: string, firstLang?: string): Subject | undefined {
+  return getSubjects(board, undefined, secondLang, thirdLang, firstLang).find((s) => s.id === id);
 }
+
