@@ -136,73 +136,43 @@ interface PaperSection {
   questions: string[];
 }
 
-function renderPaperPdf(board: string, subject: string, sections: PaperSection[], filename: string) {
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const margin = 48;
-  const maxW = pageW - margin * 2;
-  let y = margin;
-
-  const ensureSpace = (h: number) => {
-    if (y + h > pageH - margin) {
-      doc.addPage();
-      y = margin;
-    }
-  };
-
-  const writeLine = (text: string, opts: { size?: number; bold?: boolean; gap?: number; align?: "left" | "center"; indent?: number } = {}) => {
-    const size = opts.size ?? 11;
-    const indent = opts.indent ?? 0;
-    doc.setFont("helvetica", opts.bold ? "bold" : "normal");
-    doc.setFontSize(size);
-    const lines = doc.splitTextToSize(text, maxW - indent) as string[];
-    for (const line of lines) {
-      ensureSpace(size + 4);
-      if (opts.align === "center") {
-        doc.text(line, pageW / 2, y, { align: "center" });
-      } else {
-        doc.text(line, margin + indent, y);
-      }
-      y += size + 4;
-    }
-    y += opts.gap ?? 0;
-  };
-
-  // Header
-  writeLine(`${board} • Class 10 • ${subject}`, { size: 14, bold: true, align: "center" });
-  writeLine("Mock Question Paper (2025-26)", { size: 12, bold: true, align: "center", gap: 4 });
-  writeLine("Time: 3 hours                                 Max Marks: 80", { size: 10, align: "center", gap: 6 });
-  doc.setDrawColor(150);
-  ensureSpace(10);
-  doc.line(margin, y, pageW - margin, y);
-  y += 14;
-
-  writeLine("General Instructions:", { size: 11, bold: true });
-  [
-    "1. All questions are compulsory.",
-    "2. Section A: 1 mark each.  Section B: 2 marks.  Section C: 3 marks.  Section D: 5 marks.",
-    "3. Internal choice is provided in Section D.",
-  ].forEach((l) => writeLine(l, { size: 10 }));
-  y += 8;
+function downloadPaperTxt(board: string, subject: string, sections: PaperSection[], filename: string) {
+  const lines: string[] = [];
+  const center = (t: string) => t;
+  lines.push(center(`${board} • Class 10 • ${subject}`));
+  lines.push(center("Mock Question Paper (2025-26)"));
+  lines.push("Time: 3 hours                                 Max Marks: 80");
+  lines.push("=".repeat(70));
+  lines.push("");
+  lines.push("General Instructions:");
+  lines.push("1. All questions are compulsory.");
+  lines.push("2. Section A: 1 mark each.  Section B: 2 marks.  Section C: 3 marks.  Section D: 5 marks.");
+  lines.push("3. Internal choice is provided in Section D.");
+  lines.push("");
 
   sections.forEach((s) => {
-    y += 6;
-    writeLine(s.title, { size: 11, bold: true, gap: 4 });
+    lines.push("");
+    lines.push("-".repeat(70));
+    lines.push(s.title);
+    lines.push("-".repeat(70));
     s.questions.forEach((q) => {
-      writeLine(q, { size: 10, gap: 3, indent: 8 });
+      lines.push(q);
+      lines.push("");
     });
   });
 
-  // Footer
-  y += 10;
-  ensureSpace(20);
-  doc.setDrawColor(180);
-  doc.line(margin, y, pageW - margin, y);
-  y += 14;
-  writeLine("— End of Paper —", { size: 10, bold: true, align: "center" });
+  lines.push("");
+  lines.push("=".repeat(70));
+  lines.push("— End of Paper —");
 
-  doc.save(filename);
+  const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
-
 
