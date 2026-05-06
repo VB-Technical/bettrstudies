@@ -17,7 +17,7 @@ export const Route = createFileRoute("/writing-exam")({
 
 function WritingExam() {
   const [profile] = useProfile();
-  const subjects = profile.board ? getSubjects(profile.board, profile.medium, profile.secondLang, profile.thirdLang) : [];
+  const subjects = profile.board ? getSubjects(profile.board, profile.medium, profile.secondLang, profile.thirdLang, profile.firstLang) : [];
   const [subjectId, setSubjectId] = useState<string>(subjects[0]?.id || "");
   const [boardSim, setBoardSim] = useState(true);
   const [generating, setGenerating] = useState(false);
