@@ -70,6 +70,16 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  useEffect(() => {
+    applyTheme(getProfile().theme);
+    const h = () => applyTheme(getProfile().theme);
+    window.addEventListener("bettr:store", h);
+    window.addEventListener("storage", h);
+    return () => {
+      window.removeEventListener("bettr:store", h);
+      window.removeEventListener("storage", h);
+    };
+  }, []);
   return (
     <>
       <Outlet />
