@@ -2,3 +2,9 @@ project_id = "moltxxmuxaadkxgquwky"
 
 [functions.generate-paper]
 verify_jwt = false
+
+[functions.check-notes]
+verify_jwt = false
+
+[functions.tutor-chat]
+verify_jwt = false
