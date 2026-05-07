@@ -172,29 +172,6 @@ function Splash() {
             By continuing you agree to Bettr's Terms & Privacy.
           </p>
         </div>
-
-        <div className="w-full space-y-3">
-          <Button
-            onClick={() => continueAs("google")}
-            disabled={busy !== null}
-            className="w-full h-12 bg-white text-foreground hover:bg-white/95 font-semibold text-base shadow-elegant"
-          >
-            {busy === "google" ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon />}
-            {busy === "google" ? "Signing in…" : "Sign in with Google"}
-          </Button>
-          <Button
-            onClick={() => continueAs("guest")}
-            disabled={busy !== null}
-            variant="ghost"
-            className="w-full h-12 text-white hover:bg-white/10 font-semibold text-base"
-          >
-            Continue as Guest
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-          <p className="text-center text-xs text-white/70 pt-2">
-            By continuing you agree to Bettr's Terms & Privacy.
-          </p>
-        </div>
       </div>
     </div>
   );
