@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, Rocket, Trophy, Flame, Star } from "lucide-react";
 import { applyTheme, getProfile, setProfile } from "@/lib/store";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { lovable } from "@/integrations/lovable";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
