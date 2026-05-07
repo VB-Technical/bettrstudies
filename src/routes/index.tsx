@@ -25,6 +25,7 @@ function Splash() {
   const [loaded, setLoaded] = useState(false);
 
   const [busy, setBusy] = useState<null | "google" | "guest">(null);
+  const [guestName, setGuestName] = useState("");
 
   useEffect(() => {
     const p = getProfile();
