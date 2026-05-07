@@ -111,18 +111,66 @@ function Splash() {
 
       <div className={`relative z-10 mx-auto flex min-h-screen max-w-md flex-col items-center justify-between px-6 py-16 text-primary-foreground transition-opacity duration-700 ${loaded ? "opacity-100" : "opacity-0"}`}>
         <div className="flex-1 flex flex-col items-center justify-center text-center">
-          <div className="mb-6 grid h-20 w-20 place-items-center rounded-3xl bg-white/15 backdrop-blur-md shadow-glow ring-1 ring-white/20">
+          <div className="mb-6 grid h-20 w-20 place-items-center rounded-3xl bg-white/15 backdrop-blur-md shadow-glow ring-1 ring-white/20 animate-pulse">
             <Sparkles className="h-10 w-10" />
           </div>
           <h1 className="text-6xl font-extrabold tracking-tighter">Bettr</h1>
-          <p className="mt-3 text-lg/relaxed text-white/85 max-w-xs">
-            Your Class 10 companion for <span className="font-semibold">CBSE</span> & <span className="font-semibold">Karnataka State</span> Board.
+          <p className="mt-3 text-lg/relaxed text-white/90 max-w-xs font-medium">
+            Level up your <span className="font-bold">Class 10</span> journey. Learn. Win. Repeat. 🚀
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-2 text-xs text-white/80">
-            {["Notes Check", "Mind Maps", "Study Songs", "Board Sim"].map((t) => (
-              <span key={t} className="rounded-full bg-white/10 backdrop-blur-md px-3 py-1.5 ring-1 ring-white/15">{t}</span>
+          <div className="mt-6 grid grid-cols-4 gap-2 w-full max-w-xs">
+            {[
+              { Icon: Rocket, label: "Boost" },
+              { Icon: Flame, label: "Streaks" },
+              { Icon: Star, label: "XP" },
+              { Icon: Trophy, label: "Win" },
+            ].map(({ Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-1 rounded-2xl bg-white/10 backdrop-blur-md px-2 py-3 ring-1 ring-white/15">
+                <Icon className="h-5 w-5" />
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-white/85">{label}</span>
+              </div>
             ))}
           </div>
+        </div>
+
+        <div className="w-full space-y-3">
+          <Button
+            onClick={() => continueAs("google")}
+            disabled={busy !== null}
+            className="w-full h-12 bg-white text-foreground hover:bg-white/95 font-semibold text-base shadow-elegant"
+          >
+            {busy === "google" ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon />}
+            {busy === "google" ? "Signing in…" : "Sign in with Google"}
+          </Button>
+
+          <div className="relative flex items-center gap-3 py-1">
+            <div className="h-px flex-1 bg-white/20" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-white/70">or jump in as guest</span>
+            <div className="h-px flex-1 bg-white/20" />
+          </div>
+
+          <Input
+            value={guestName}
+            onChange={(e) => setGuestName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") continueAs("guest");
+            }}
+            placeholder="Your name (e.g. Aarav)"
+            className="h-12 bg-white/15 backdrop-blur-md border-white/25 text-white placeholder:text-white/60 focus-visible:ring-white/60 text-base"
+            maxLength={32}
+          />
+          <Button
+            onClick={() => continueAs("guest")}
+            disabled={busy !== null || !guestName.trim()}
+            className="w-full h-12 bg-gradient-primary text-primary-foreground font-semibold text-base shadow-elegant disabled:opacity-50"
+          >
+            {busy === "guest" ? <Loader2 className="h-5 w-5 animate-spin" /> : <Rocket className="h-5 w-5" />}
+            Start my journey
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+          <p className="text-center text-xs text-white/70 pt-2">
+            By continuing you agree to Bettr's Terms & Privacy.
+          </p>
         </div>
 
         <div className="w-full space-y-3">
