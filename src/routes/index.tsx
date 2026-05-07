@@ -71,9 +71,9 @@ function Splash() {
     setBusy(mode);
     try {
       if (mode === "guest") {
-        const raw = window.prompt("What's your name?", "");
-        const name = (raw ?? "").trim();
+        const name = guestName.trim();
         if (!name) {
+          toast.error("Please enter your name to continue");
           setBusy(null);
           return;
         }
