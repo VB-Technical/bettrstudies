@@ -1,11 +1,13 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { SubjectIcon } from "@/components/SubjectIcon";
 import { getChapterPercent, isChapterPassed, useProfile, useProgressTick } from "@/lib/store";
 import { getSubject } from "@/lib/syllabus";
-import { CheckCircle2, Lock, Play } from "lucide-react";
+import { CheckCircle2, Lock, Play, FileText, Headphones, Network } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/subject/$subjectId")({
   component: SubjectPage,
