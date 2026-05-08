@@ -138,7 +138,14 @@ function ChapterPage() {
 
         {/* MIND MAP */}
         <TabsContent value="mind" className="mt-4">
-          <MindMap title={chapter.title} topics={chapter.topics} />
+          <MindMap title={chapter.title} topics={chapter.topics} svgRef={mindMapRef} />
+          <Button
+            onClick={() => downloadMindMapPng(mindMapRef.current, `${subject.id}-ch${idx + 1}-mindmap.png`)}
+            className="mt-3 w-full bg-gradient-primary text-primary-foreground shadow-soft"
+          >
+            <ImageIcon className="h-4 w-4" />
+            Download Mind Map as PNG
+          </Button>
         </TabsContent>
 
         {/* TEXT */}
