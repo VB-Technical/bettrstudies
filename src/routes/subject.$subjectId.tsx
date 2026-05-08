@@ -17,6 +17,8 @@ function SubjectPage() {
   const { subjectId } = useParams({ from: "/subject/$subjectId" });
   const [profile] = useProfile();
   useProgressTick();
+  const navigate = useNavigate();
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   const subject = profile.board ? getSubject(profile.board, subjectId, profile.secondLang, profile.thirdLang, profile.firstLang) : undefined;
   if (!subject) {
