@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useParams, useSearch } from "@tanstack/react-router";
+import { useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { passChapter, setChapterProgress, useProfile, useProgressTick, getChapterPercent } from "@/lib/store";
@@ -8,10 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { Headphones, Network, FileText, Sparkles, Music, Download, Pause, Play, CheckCircle2, Trophy } from "lucide-react";
+import { Headphones, Network, FileText, Sparkles, Music, Download, Pause, Play, CheckCircle2, Trophy, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
+type ChapterSearch = { mode?: "audio" | "mind" | "text" | "ai" | "song" };
+
 export const Route = createFileRoute("/subject/$subjectId/chapter/$chapterIdx")({
+  validateSearch: (search: Record<string, unknown>): ChapterSearch => {
+    const m = search.mode;
+    if (m === "audio" || m === "mind" || m === "text" || m === "ai" || m === "song") return { mode: m };
+    return {};
+  },
   component: ChapterPage,
 });
 
