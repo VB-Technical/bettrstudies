@@ -93,7 +93,7 @@ function ChapterPage() {
 
       <p className="text-muted-foreground leading-relaxed">{chapter.brief}</p>
 
-      <Tabs defaultValue="audio" className="mt-6">
+      <Tabs defaultValue={search.mode ?? "audio"} className="mt-6">
         <TabsList className="grid w-full grid-cols-5 h-auto p-1 bg-secondary rounded-xl">
           {[
             { v: "audio", icon: Headphones, label: "Audio" },
