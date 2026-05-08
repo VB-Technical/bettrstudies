@@ -24,6 +24,7 @@ export const Route = createFileRoute("/subject/$subjectId/chapter/$chapterIdx")(
 
 function ChapterPage() {
   const { subjectId, chapterIdx } = useParams({ from: "/subject/$subjectId/chapter/$chapterIdx" });
+  const search = useSearch({ from: "/subject/$subjectId/chapter/$chapterIdx" });
   const idx = parseInt(chapterIdx, 10);
   const [profile] = useProfile();
   useProgressTick();
@@ -34,6 +35,7 @@ function ChapterPage() {
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [mnemonic, setMnemonic] = useState(false);
   const [songPlaying, setSongPlaying] = useState(false);
+  const mindMapRef = useRef<SVGSVGElement | null>(null);
 
   if (!subject || !chapter) {
     return (
