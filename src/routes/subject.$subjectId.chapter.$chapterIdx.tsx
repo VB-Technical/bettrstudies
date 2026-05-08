@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useParams, useSearch } from "@tanstack/react-router";
+import { useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { passChapter, setChapterProgress, useProfile, useProgressTick, getChapterPercent } from "@/lib/store";
@@ -8,15 +8,23 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { Headphones, Network, FileText, Sparkles, Music, Download, Pause, Play, CheckCircle2, Trophy } from "lucide-react";
+import { Headphones, Network, FileText, Sparkles, Music, Download, Pause, Play, CheckCircle2, Trophy, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
+type ChapterSearch = { mode?: "audio" | "mind" | "text" | "ai" | "song" };
+
 export const Route = createFileRoute("/subject/$subjectId/chapter/$chapterIdx")({
+  validateSearch: (search: Record<string, unknown>): ChapterSearch => {
+    const m = search.mode;
+    if (m === "audio" || m === "mind" || m === "text" || m === "ai" || m === "song") return { mode: m };
+    return {};
+  },
   component: ChapterPage,
 });
 
 function ChapterPage() {
   const { subjectId, chapterIdx } = useParams({ from: "/subject/$subjectId/chapter/$chapterIdx" });
+  const search = useSearch({ from: "/subject/$subjectId/chapter/$chapterIdx" });
   const idx = parseInt(chapterIdx, 10);
   const [profile] = useProfile();
   useProgressTick();
@@ -27,6 +35,7 @@ function ChapterPage() {
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [mnemonic, setMnemonic] = useState(false);
   const [songPlaying, setSongPlaying] = useState(false);
+  const mindMapRef = useRef<SVGSVGElement | null>(null);
 
   if (!subject || !chapter) {
     return (
@@ -84,7 +93,7 @@ function ChapterPage() {
 
       <p className="text-muted-foreground leading-relaxed">{chapter.brief}</p>
 
-      <Tabs defaultValue="audio" className="mt-6">
+      <Tabs defaultValue={search.mode ?? "audio"} className="mt-6">
         <TabsList className="grid w-full grid-cols-5 h-auto p-1 bg-secondary rounded-xl">
           {[
             { v: "audio", icon: Headphones, label: "Audio" },
@@ -129,7 +138,14 @@ function ChapterPage() {
 
         {/* MIND MAP */}
         <TabsContent value="mind" className="mt-4">
-          <MindMap title={chapter.title} topics={chapter.topics} />
+          <MindMap title={chapter.title} topics={chapter.topics} svgRef={mindMapRef} />
+          <Button
+            onClick={() => downloadMindMapPng(mindMapRef.current, `${subject.id}-ch${idx + 1}-mindmap.png`)}
+            className="mt-3 w-full bg-gradient-primary text-primary-foreground shadow-soft"
+          >
+            <ImageIcon className="h-4 w-4" />
+            Download Mind Map as PNG
+          </Button>
         </TabsContent>
 
         {/* TEXT */}
@@ -271,14 +287,14 @@ function generateLyrics(title: string, topics: string[]) {
   return `[Verse 1]\n${title} — let's break it down,\n${t[0] || "First idea"} wears the crown.\n\n[Chorus]\nLearn it slow, learn it right,\nBettr keeps your mind alight.\n\n[Verse 2]\n${t[1] || "Second piece"} fits in too,\n${t[2] || "Third one"} brings it through.`;
 }
 
-function MindMap({ title, topics }: { title: string; topics: string[] }) {
+function MindMap({ title, topics, svgRef }: { title: string; topics: string[]; svgRef?: React.Ref<SVGSVGElement> }) {
   const W = 360, H = 320, cx = W / 2, cy = H / 2;
   const r = 110;
   const nodes = topics.slice(0, 6);
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-soft overflow-hidden">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Mind Map</p>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
+      <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="mm-grad" x1="0" x2="1" y1="0" y2="1">
             <stop offset="0%" stopColor="var(--primary)" />
@@ -312,3 +328,49 @@ function MindMap({ title, topics }: { title: string; topics: string[] }) {
     </div>
   );
 }
+
+function downloadMindMapPng(svg: SVGSVGElement | null, filename: string) {
+  if (!svg) return toast.error("Mind map not ready");
+  const cs = getComputedStyle(document.documentElement);
+  const vars = ["--primary", "--primary-glow", "--border", "--card", "--foreground"];
+  const clone = svg.cloneNode(true) as SVGSVGElement;
+  let svgStr = new XMLSerializer().serializeToString(clone);
+  for (const v of vars) {
+    const val = cs.getPropertyValue(v).trim() || "#888";
+    svgStr = svgStr.split(`var(${v})`).join(val);
+  }
+  if (!svgStr.includes("xmlns=")) {
+    svgStr = svgStr.replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" ');
+  }
+  const W = 1080, H = 960;
+  const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return toast.error("Canvas not supported");
+    ctx.fillStyle = cs.getPropertyValue("--background").trim() || "#fff";
+    ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(img, 0, 0, W, H);
+    URL.revokeObjectURL(url);
+    canvas.toBlob((b) => {
+      if (!b) return toast.error("Export failed");
+      const a = document.createElement("a");
+      const dl = URL.createObjectURL(b);
+      a.href = dl;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(dl);
+      toast.success("Mind map saved as PNG");
+    }, "image/png");
+  };
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    toast.error("Could not render mind map image");
+  };
+  img.src = url;
+}
+

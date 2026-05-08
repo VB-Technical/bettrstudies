@@ -1,11 +1,13 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { SubjectIcon } from "@/components/SubjectIcon";
 import { getChapterPercent, isChapterPassed, useProfile, useProgressTick } from "@/lib/store";
 import { getSubject } from "@/lib/syllabus";
-import { CheckCircle2, Lock, Play } from "lucide-react";
+import { CheckCircle2, Lock, Play, FileText, Headphones, Network } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/subject/$subjectId")({
   component: SubjectPage,
@@ -15,6 +17,8 @@ function SubjectPage() {
   const { subjectId } = useParams({ from: "/subject/$subjectId" });
   const [profile] = useProfile();
   useProgressTick();
+  const navigate = useNavigate();
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   const subject = profile.board ? getSubject(profile.board, subjectId, profile.secondLang, profile.thirdLang, profile.firstLang) : undefined;
   if (!subject) {
@@ -67,11 +71,11 @@ function SubjectPage() {
                   </div>
                 </div>
               ) : (
-                <Link
-                  to="/subject/$subjectId/chapter/$chapterIdx"
-                  params={{ subjectId: subject.id, chapterIdx: String(i) }}
+                <button
+                  type="button"
+                  onClick={() => setOpenIdx(i)}
                   className={cn(
-                    "flex items-center gap-3 rounded-2xl border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-soft",
+                    "w-full text-left flex items-center gap-3 rounded-2xl border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-soft",
                     passed ? "border-success/30" : "border-border"
                   )}
                 >
@@ -96,12 +100,54 @@ function SubjectPage() {
                     </div>
                   </div>
                   <Play className="h-4 w-4 text-muted-foreground" />
-                </Link>
+                </button>
               )}
             </li>
           );
         })}
       </ol>
+
+      <Dialog open={openIdx !== null} onOpenChange={(o) => !o && setOpenIdx(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>How do you want to learn?</DialogTitle>
+            <DialogDescription>
+              {openIdx !== null && subject.chapters[openIdx]
+                ? `Chapter ${openIdx + 1} • ${subject.chapters[openIdx].title}`
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 mt-2">
+            {[
+              { mode: "text", icon: FileText, title: "Text Review", desc: "Read notes & download as PDF" },
+              { mode: "audio", icon: Headphones, title: "Audio Review", desc: "Listen to a spoken overview" },
+              { mode: "mind", icon: Network, title: "Mind Map Image", desc: "Visual map you can save as PNG" },
+            ].map(({ mode, icon: Icon, title, desc }) => (
+              <button
+                key={mode}
+                onClick={() => {
+                  const idx = openIdx!;
+                  setOpenIdx(null);
+                  navigate({
+                    to: "/subject/$subjectId/chapter/$chapterIdx",
+                    params: { subjectId: subject.id, chapterIdx: String(idx) },
+                    search: { mode } as never,
+                  });
+                }}
+                className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50 hover:shadow-soft transition-all"
+              >
+                <span className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-primary text-primary-foreground shadow-soft">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <div className="flex-1">
+                  <p className="font-bold">{title}</p>
+                  <p className="text-xs text-muted-foreground">{desc}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
