@@ -9,13 +9,38 @@ interface Body {
   context?: { board?: string; subject?: string; chapter?: string; name?: string };
 }
 
+import { rateLimit, readJsonWithLimit, clampString, PayloadTooLarge } from "../_shared/guard.ts";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const limited = rateLimit(req, { limit: 20, windowMs: 60_000 });
+  if (limited) return limited;
+
   try {
-    const { messages, context } = (await req.json()) as Body;
+    let parsed: Body;
+    try {
+      parsed = await readJsonWithLimit<Body>(req, 200_000);
+    } catch (e) {
+      if (e instanceof PayloadTooLarge) {
+        return new Response(JSON.stringify({ error: "Message too large" }), {
+          status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw e;
+    }
+    const messages = (Array.isArray(parsed.messages) ? parsed.messages : []).slice(-30)
+      .filter((m) => m && typeof m.content === "string" && ["user", "assistant", "system"].includes(m.role))
+      .map((m) => ({ role: m.role, content: m.content.slice(0, 8000) }));
+    const context = parsed.context ? {
+      board: clampString(parsed.context.board, 50),
+      subject: clampString(parsed.context.subject, 200),
+      chapter: clampString(parsed.context.chapter, 200),
+      name: clampString(parsed.context.name, 100),
+    } : undefined;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
+    if (messages.length === 0) throw new Error("messages required");
 
     const ctxLine = [
       context?.name ? `Student: ${context.name}` : null,
