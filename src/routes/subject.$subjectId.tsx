@@ -259,9 +259,16 @@ function TextReview({ chapter, subjectId, subjectName, chapterIdx, onBack }: { c
         {error && <span className="text-destructive">{error}</span>}
         {!loading && !error && (data?.overview || chapter.brief)}
       </article>
-      <Button onClick={downloadPdf} className="mt-2 w-full bg-gradient-primary text-primary-foreground shadow-soft" disabled={loading}>
-        <Download className="h-4 w-4" /> Download as PDF
-      </Button>
+      <div className="grid gap-2 mt-2">
+        <Button onClick={downloadTxt} className="w-full bg-gradient-primary text-primary-foreground shadow-soft" disabled={loading}>
+          <Download className="h-4 w-4" /> Download as TXT
+        </Button>
+        {downloaded && (
+          <Button onClick={openILovePdf} variant="outline" className="w-full">
+            <FileText className="h-4 w-4" /> Convert to PDF with iLovePDF
+          </Button>
+        )}
+      </div>
     </>
   );
 }
