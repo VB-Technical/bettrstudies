@@ -125,10 +125,10 @@ function SubjectPage() {
             />
           )}
           {chapter && mode === "text" && (
-            <TextReview chapter={chapter} subjectId={subject.id} chapterIdx={openIdx!} onBack={() => setMode("menu")} />
+            <TextReview chapter={chapter} subjectId={subject.id} subjectName={subject.name} chapterIdx={openIdx!} onBack={() => setMode("menu")} />
           )}
           {chapter && mode === "audio" && (
-            <AudioReview chapter={chapter} onBack={() => setMode("menu")} />
+            <AudioReview chapter={chapter} subjectName={subject.name} onBack={() => setMode("menu")} />
           )}
           {chapter && mode === "mind" && (
             <MindMapReview chapter={chapter} subject={subject.name} onBack={() => setMode("menu")} />
