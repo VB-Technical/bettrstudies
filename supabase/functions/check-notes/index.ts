@@ -14,16 +14,40 @@ interface Body {
   topic?: string;
 }
 
+import { rateLimit, readJsonWithLimit, clampString, PayloadTooLarge } from "../_shared/guard.ts";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const limited = rateLimit(req, { limit: 10, windowMs: 60_000 });
+  if (limited) return limited;
+
   try {
-    const { imageBase64, subject, chapter, topic } = (await req.json()) as Body;
+    let body: Body;
+    try {
+      body = await readJsonWithLimit<Body>(req, 12_000_000); // ~12 MB
+    } catch (e) {
+      if (e instanceof PayloadTooLarge) {
+        return new Response(JSON.stringify({ error: "Image too large (max ~9MB)" }), {
+          status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw e;
+    }
+    const imageBase64 = body.imageBase64;
+    const subject = clampString(body.subject, 200);
+    const chapter = clampString(body.chapter, 200);
+    const topic = clampString(body.topic, 200);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
-    if (!imageBase64) throw new Error("imageBase64 required");
+    if (!imageBase64 || typeof imageBase64 !== "string") throw new Error("imageBase64 required");
+    if (imageBase64.length > 12_000_000) {
+      return new Response(JSON.stringify({ error: "Image too large (max ~9MB)" }), {
+        status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const dataUrl = imageBase64.startsWith("data:")
       ? imageBase64
