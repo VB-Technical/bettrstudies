@@ -228,16 +228,21 @@ function TextReview({ chapter, subjectId, subjectName, chapterIdx, onBack }: { c
   const [lang, setLang] = useState<Lang>("english");
   const { data, loading, error } = useChapterOverview(chapter, subjectName, lang);
 
-  const downloadPdf = () => {
+  const [downloaded, setDownloaded] = useState(false);
+  const downloadTxt = () => {
     const body = data?.overview || `${chapter.brief}\n\n${chapter.topics.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
-    const blob = new Blob([`${chapter.title}\n\n${body}`], { type: "application/pdf" });
+    const blob = new Blob([`${chapter.title}\n\n${body}`], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${subjectId}-ch${chapterIdx + 1}-${chapter.title.replace(/\s+/g, "-")}.pdf`;
+    a.download = `${subjectId}-ch${chapterIdx + 1}-${chapter.title.replace(/\s+/g, "-")}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Notes downloaded");
+    setDownloaded(true);
+    toast.success("Notes downloaded as TXT");
+  };
+  const openILovePdf = () => {
+    window.open("https://www.ilovepdf.com/txt_to_pdf", "_blank", "noopener,noreferrer");
   };
   return (
     <>
@@ -254,9 +259,16 @@ function TextReview({ chapter, subjectId, subjectName, chapterIdx, onBack }: { c
         {error && <span className="text-destructive">{error}</span>}
         {!loading && !error && (data?.overview || chapter.brief)}
       </article>
-      <Button onClick={downloadPdf} className="mt-2 w-full bg-gradient-primary text-primary-foreground shadow-soft" disabled={loading}>
-        <Download className="h-4 w-4" /> Download as PDF
-      </Button>
+      <div className="grid gap-2 mt-2">
+        <Button onClick={downloadTxt} className="w-full bg-gradient-primary text-primary-foreground shadow-soft" disabled={loading}>
+          <Download className="h-4 w-4" /> Download as TXT
+        </Button>
+        {downloaded && (
+          <Button onClick={openILovePdf} variant="outline" className="w-full">
+            <FileText className="h-4 w-4" /> Convert to PDF with iLovePDF
+          </Button>
+        )}
+      </div>
     </>
   );
 }
