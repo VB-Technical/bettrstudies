@@ -228,16 +228,21 @@ function TextReview({ chapter, subjectId, subjectName, chapterIdx, onBack }: { c
   const [lang, setLang] = useState<Lang>("english");
   const { data, loading, error } = useChapterOverview(chapter, subjectName, lang);
 
-  const downloadPdf = () => {
+  const [downloaded, setDownloaded] = useState(false);
+  const downloadTxt = () => {
     const body = data?.overview || `${chapter.brief}\n\n${chapter.topics.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
-    const blob = new Blob([`${chapter.title}\n\n${body}`], { type: "application/pdf" });
+    const blob = new Blob([`${chapter.title}\n\n${body}`], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${subjectId}-ch${chapterIdx + 1}-${chapter.title.replace(/\s+/g, "-")}.pdf`;
+    a.download = `${subjectId}-ch${chapterIdx + 1}-${chapter.title.replace(/\s+/g, "-")}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Notes downloaded");
+    setDownloaded(true);
+    toast.success("Notes downloaded as TXT");
+  };
+  const openILovePdf = () => {
+    window.open("https://www.ilovepdf.com/txt_to_pdf", "_blank", "noopener,noreferrer");
   };
   return (
     <>
