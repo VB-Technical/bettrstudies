@@ -125,10 +125,10 @@ function SubjectPage() {
             />
           )}
           {chapter && mode === "text" && (
-            <TextReview chapter={chapter} subjectId={subject.id} chapterIdx={openIdx!} onBack={() => setMode("menu")} />
+            <TextReview chapter={chapter} subjectId={subject.id} subjectName={subject.name} chapterIdx={openIdx!} onBack={() => setMode("menu")} />
           )}
           {chapter && mode === "audio" && (
-            <AudioReview chapter={chapter} onBack={() => setMode("menu")} />
+            <AudioReview chapter={chapter} subjectName={subject.name} onBack={() => setMode("menu")} />
           )}
           {chapter && mode === "mind" && (
             <MindMapReview chapter={chapter} subject={subject.name} onBack={() => setMode("menu")} />
@@ -179,12 +179,58 @@ function BackBar({ onBack, title }: { onBack: () => void; title: string }) {
   );
 }
 
-function TextReview({ chapter, subjectId, chapterIdx, onBack }: { chapter: Chapter; subjectId: string; chapterIdx: number; onBack: () => void }) {
+type Lang = "english" | "kannada" | "hindi" | "sanskrit" | "urdu";
+const LANG_OPTS: { value: Lang; label: string; bcp47: string }[] = [
+  { value: "english", label: "English", bcp47: "en-IN" },
+  { value: "kannada", label: "ಕನ್ನಡ", bcp47: "kn-IN" },
+  { value: "hindi", label: "हिन्दी", bcp47: "hi-IN" },
+  { value: "sanskrit", label: "संस्कृतम्", bcp47: "sa-IN" },
+  { value: "urdu", label: "اردو", bcp47: "ur-IN" },
+];
+
+function useChapterOverview(chapter: Chapter, subjectName: string, lang: Lang) {
+  const [data, setData] = useState<{ overview: string; spoken: string } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    let cancel = false;
+    setLoading(true); setError(null); setData(null);
+    supabase.functions.invoke("chapter-overview", {
+      body: { title: chapter.title, brief: chapter.brief, topics: chapter.topics, subject: subjectName, language: lang },
+    }).then(({ data, error }) => {
+      if (cancel) return;
+      if (error) { setError(error.message); return; }
+      const d = data as { overview?: string; spoken?: string; error?: string };
+      if (d?.error) { setError(d.error); return; }
+      setData({ overview: d.overview ?? "", spoken: d.spoken ?? "" });
+    }).catch((e) => { if (!cancel) setError(e?.message ?? "Failed"); })
+      .finally(() => { if (!cancel) setLoading(false); });
+    return () => { cancel = true; };
+  }, [chapter.title, subjectName, lang]);
+  return { data, loading, error };
+}
+
+function LangPicker({ value, onChange }: { value: Lang; onChange: (l: Lang) => void }) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {LANG_OPTS.map((o) => (
+        <button key={o.value} type="button" onClick={() => onChange(o.value)}
+          className={cn("px-2.5 py-1 rounded-full text-xs font-semibold border transition",
+            value === o.value ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover:border-primary/40")}>
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function TextReview({ chapter, subjectId, subjectName, chapterIdx, onBack }: { chapter: Chapter; subjectId: string; subjectName: string; chapterIdx: number; onBack: () => void }) {
+  const [lang, setLang] = useState<Lang>("english");
+  const { data, loading, error } = useChapterOverview(chapter, subjectName, lang);
+
   const downloadPdf = () => {
-    const blob = new Blob([
-      `${chapter.title}\n\n${chapter.brief}\n\nKey topics:\n` +
-        chapter.topics.map((t, i) => `  ${i + 1}. ${t}`).join("\n"),
-    ], { type: "application/pdf" });
+    const body = data?.overview || `${chapter.brief}\n\n${chapter.topics.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
+    const blob = new Blob([`${chapter.title}\n\n${body}`], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -198,53 +244,87 @@ function TextReview({ chapter, subjectId, chapterIdx, onBack }: { chapter: Chapt
       <BackBar onBack={onBack} title="All options" />
       <DialogHeader>
         <DialogTitle>{chapter.title}</DialogTitle>
-        <DialogDescription>Text review</DialogDescription>
+        <DialogDescription className="flex items-center gap-1.5">
+          <Sparkles className="h-3.5 w-3.5 text-primary" /> Gemini overview
+        </DialogDescription>
       </DialogHeader>
-      <article className="space-y-4 text-sm leading-relaxed">
-        <p className="text-foreground">{chapter.brief}</p>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Key topics</p>
-          <ul className="space-y-2">
-            {chapter.topics.map((t, i) => (
-              <li key={i} className="flex gap-3">
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary/10 text-primary text-xs font-bold">{i + 1}</span>
-                <span>{t}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-xl bg-muted/50 p-3 text-xs text-muted-foreground">
-          <p className="font-semibold text-foreground mb-1">Quick recap</p>
-          <p>Focus on the underlined topics above — they appear most often in the board blueprint. Re-read this once, close the dialog, and try recalling the key points without looking.</p>
-        </div>
+      <LangPicker value={lang} onChange={setLang} />
+      <article className="space-y-3 text-sm leading-relaxed max-h-[45vh] overflow-y-auto rounded-xl bg-muted/30 p-4 whitespace-pre-wrap">
+        {loading && <span className="inline-flex items-center gap-2 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Writing your overview…</span>}
+        {error && <span className="text-destructive">{error}</span>}
+        {!loading && !error && (data?.overview || chapter.brief)}
       </article>
-      <Button onClick={downloadPdf} className="mt-2 w-full bg-gradient-primary text-primary-foreground shadow-soft">
+      <Button onClick={downloadPdf} className="mt-2 w-full bg-gradient-primary text-primary-foreground shadow-soft" disabled={loading}>
         <Download className="h-4 w-4" /> Download as PDF
       </Button>
     </>
   );
 }
 
-function AudioReview({ chapter, onBack }: { chapter: Chapter; onBack: () => void }) {
-  const [playing, setPlaying] = useState(false);
-  const [ready, setReady] = useState(false);
+function AudioReview({ chapter, subjectName, onBack }: { chapter: Chapter; subjectName: string; onBack: () => void }) {
+  const [lang, setLang] = useState<Lang>("english");
+  const { data, loading, error } = useChapterOverview(chapter, subjectName, lang);
+  const [status, setStatus] = useState<"idle" | "playing" | "paused">("idle");
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [voicesReady, setVoicesReady] = useState(false);
 
-  const text = `${chapter.title}. ${chapter.brief} Here are the key topics. ${chapter.topics
-    .map((t, i) => `${i + 1}. ${t}.`)
-    .join(" ")} Take a moment to picture each idea. You've got this!`;
-
+  // Poll synth state to keep button label honest across browsers
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    // Voices may load async on some browsers
-    const onVoices = () => setReady(true);
-    if (window.speechSynthesis.getVoices().length > 0) setReady(true);
+    const sync = () => {
+      const s = window.speechSynthesis;
+      if (!s.speaking && !s.paused) setStatus("idle");
+      else if (s.paused) setStatus("paused");
+      else setStatus("playing");
+    };
+    const id = setInterval(sync, 400);
+    const onVoices = () => setVoicesReady(true);
+    if (window.speechSynthesis.getVoices().length) setVoicesReady(true);
     window.speechSynthesis.addEventListener("voiceschanged", onVoices);
     return () => {
+      clearInterval(id);
       window.speechSynthesis.removeEventListener("voiceschanged", onVoices);
       window.speechSynthesis.cancel();
     };
   }, []);
+
+  // Stop audio if language or text changes
+  useEffect(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      setStatus("idle");
+    }
+  }, [lang, data?.spoken]);
+
+  const text = data?.spoken || `${chapter.title}. ${chapter.brief}`;
+
+  const pickVoice = (bcp47: string) => {
+    const voices = window.speechSynthesis.getVoices();
+    const exact = voices.find((v) => v.lang?.toLowerCase() === bcp47.toLowerCase());
+    if (exact) return exact;
+    const prefix = bcp47.split("-")[0].toLowerCase();
+    return voices.find((v) => v.lang?.toLowerCase().startsWith(prefix)) || voices[0];
+  };
+
+  const start = () => {
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const opt = LANG_OPTS.find((o) => o.value === lang)!;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = opt.bcp47;
+    const v = pickVoice(opt.bcp47);
+    if (v) u.voice = v;
+    u.rate = 0.95; u.pitch = 1;
+    u.onend = () => { setStatus("idle"); utterRef.current = null; };
+    u.onerror = (e) => {
+      console.error("TTS", e);
+      setStatus("idle"); utterRef.current = null;
+      toast.error(`No ${opt.label} voice available on this device — try English.`);
+    };
+    utterRef.current = u;
+    setStatus("playing");
+    setTimeout(() => synth.speak(u), 50);
+  };
 
   const toggle = () => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -252,70 +332,61 @@ function AudioReview({ chapter, onBack }: { chapter: Chapter; onBack: () => void
       return;
     }
     const synth = window.speechSynthesis;
-    if (playing) {
-      synth.cancel();
-      setPlaying(false);
-      return;
-    }
-    synth.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    const voices = synth.getVoices();
-    const preferred =
-      voices.find((v) => /en[-_](US|GB|IN)/i.test(v.lang) && /female|samantha|google/i.test(v.name)) ||
-      voices.find((v) => v.lang?.toLowerCase().startsWith("en")) ||
-      voices[0];
-    if (preferred) u.voice = preferred;
-    u.rate = 0.95;
-    u.pitch = 1;
-    u.onend = () => { setPlaying(false); utterRef.current = null; };
-    u.onerror = (e) => {
-      console.error("TTS error", e);
-      setPlaying(false);
-      utterRef.current = null;
-      toast.error("Audio playback failed — try again");
-    };
-    utterRef.current = u;
-    setPlaying(true);
-    // Tiny delay helps on Chrome where cancel + speak race
-    setTimeout(() => synth.speak(u), 50);
+    if (status === "playing") { synth.pause(); setStatus("paused"); return; }
+    if (status === "paused") { synth.resume(); setStatus("playing"); return; }
+    start();
   };
+
+  const disabled = loading || !text || !voicesReady;
 
   return (
     <>
       <BackBar onBack={onBack} title="All options" />
       <DialogHeader>
         <DialogTitle>{chapter.title}</DialogTitle>
-        <DialogDescription>Audio review • text-to-speech</DialogDescription>
+        <DialogDescription className="flex items-center gap-1.5">
+          <Sparkles className="h-3.5 w-3.5 text-primary" /> Gemini-written audio review
+        </DialogDescription>
       </DialogHeader>
+      <LangPicker value={lang} onChange={setLang} />
 
       <div className="rounded-3xl bg-gradient-hero p-5 text-primary-foreground shadow-elegant">
         <div className="flex items-center gap-4">
           <button
             onClick={toggle}
-            disabled={!ready}
-            aria-label={playing ? "Pause" : "Play"}
+            disabled={disabled}
+            aria-label={status === "playing" ? "Pause" : "Play"}
             className="grid h-16 w-16 place-items-center rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md ring-1 ring-white/20 transition disabled:opacity-50"
           >
-            {playing ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7 ml-0.5" />}
+            {loading ? <Loader2 className="h-7 w-7 animate-spin" /> : status === "playing" ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7 ml-0.5" />}
           </button>
           <div className="flex-1 min-w-0">
-            <p className="text-xs uppercase tracking-widest text-white/80 font-semibold">Now playing</p>
+            <p className="text-xs uppercase tracking-widest text-white/80 font-semibold">
+              {status === "playing" ? "Speaking" : status === "paused" ? "Paused" : "Ready"}
+            </p>
             <p className="font-bold text-lg leading-tight truncate">{chapter.title}</p>
-            <p className="text-sm text-white/85">{playing ? "Speaking…" : ready ? "Tap play to listen" : "Loading voice…"}</p>
+            <p className="text-sm text-white/85">
+              {loading ? "Writing summary in " + (LANG_OPTS.find((o) => o.value === lang)?.label) + "…"
+                : error ? "Failed to load — using fallback text"
+                : status === "paused" ? "Tap play to resume"
+                : status === "playing" ? "Tap to pause"
+                : "Tap play to listen"}
+            </p>
           </div>
         </div>
         <div className="mt-4 h-1 rounded-full bg-white/20 overflow-hidden">
-          <div className={cn("h-full bg-white rounded-full transition-all", playing ? "animate-pulse w-2/3" : "w-0")} />
+          <div className={cn("h-full bg-white rounded-full transition-all", status === "playing" ? "animate-pulse w-2/3" : status === "paused" ? "w-1/3" : "w-0")} />
         </div>
       </div>
 
       <details className="text-xs text-muted-foreground">
         <summary className="cursor-pointer font-semibold">Show transcript</summary>
-        <p className="mt-2 leading-relaxed">{text}</p>
+        <p className="mt-2 leading-relaxed whitespace-pre-wrap">{text}</p>
       </details>
     </>
   );
 }
+
 
 function MindMapReview({ chapter, subject, onBack }: { chapter: Chapter; subject: string; onBack: () => void }) {
   const [loading, setLoading] = useState(false);
