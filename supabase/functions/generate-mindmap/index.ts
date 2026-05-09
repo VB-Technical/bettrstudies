@@ -13,16 +13,35 @@ interface Body {
   subject?: string;
 }
 
+import { rateLimit, readJsonWithLimit, clampString, PayloadTooLarge } from "../_shared/guard.ts";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const limited = rateLimit(req, { limit: 8, windowMs: 60_000 });
+  if (limited) return limited;
+
   try {
-    const { title, topics, subject } = (await req.json()) as Body;
+    let body: Body;
+    try {
+      body = await readJsonWithLimit<Body>(req, 100_000);
+    } catch (e) {
+      if (e instanceof PayloadTooLarge) {
+        return new Response(JSON.stringify({ error: "Payload too large" }), {
+          status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw e;
+    }
+    const title = clampString(body.title, 200);
+    const subject = clampString(body.subject, 200);
+    const topics = (Array.isArray(body.topics) ? body.topics : []).slice(0, 12)
+      .map((t) => (typeof t === "string" ? t.slice(0, 200) : "")).filter(Boolean);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
     if (!title) throw new Error("title required");
 
-    const topicList = (topics || []).slice(0, 8).map((t, i) => `${i + 1}. ${t}`).join("\n");
+    const topicList = topics.slice(0, 8).map((t, i) => `${i + 1}. ${t}`).join("\n");
 
     const prompt = `Create a clean, colorful, hand-drawn style MIND MAP infographic illustration on a white background for the chapter titled "${title}"${subject ? ` from ${subject}` : ""}.
 

@@ -13,15 +13,35 @@ interface Body {
   chapters: string[];
 }
 
+import { rateLimit, readJsonWithLimit, clampString, PayloadTooLarge } from "../_shared/guard.ts";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const limited = rateLimit(req, { limit: 5, windowMs: 60_000 });
+  if (limited) return limited;
+
   try {
-    const { board, subject, chapters } = (await req.json()) as Body;
+    let body: Body;
+    try {
+      body = await readJsonWithLimit<Body>(req, 200_000);
+    } catch (e) {
+      if (e instanceof PayloadTooLarge) {
+        return new Response(JSON.stringify({ error: "Payload too large" }), {
+          status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw e;
+    }
+    const board = clampString(body.board, 50) ?? "";
+    const subject = clampString(body.subject, 200) ?? "";
+    const chapters = (Array.isArray(body.chapters) ? body.chapters : []).slice(0, 50)
+      .map((c) => (typeof c === "string" ? c.slice(0, 300) : "")).filter(Boolean);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
+    if (!board || !subject || chapters.length === 0) throw new Error("board, subject, chapters required");
 
     const sys = `You are an experienced Class 10 ${board} board examiner authoring an official-style mock question paper for the subject "${subject}". Write questions in clear English (transliterate any non-Latin chapter names if needed). Reference the actual chapter content; never produce placeholder text like "Define a key term".`;
 

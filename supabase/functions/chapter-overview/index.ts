@@ -20,10 +20,32 @@ const LANG_NAME: Record<string, string> = {
   urdu: "Urdu (اردو)",
 };
 
+import { rateLimit, readJsonWithLimit, clampString, PayloadTooLarge } from "../_shared/guard.ts";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const limited = rateLimit(req, { limit: 15, windowMs: 60_000 });
+  if (limited) return limited;
+
   try {
-    const { title, brief, topics, subject, language = "english" } = (await req.json()) as Body;
+    let body: Body;
+    try {
+      body = await readJsonWithLimit<Body>(req, 200_000);
+    } catch (e) {
+      if (e instanceof PayloadTooLarge) {
+        return new Response(JSON.stringify({ error: "Payload too large" }), {
+          status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw e;
+    }
+    const title = clampString(body.title, 200);
+    const brief = clampString(body.brief, 4000);
+    const subject = clampString(body.subject, 200);
+    const language = (["english","kannada","hindi","sanskrit","urdu"].includes(body.language as string) ? body.language : "english") as Body["language"];
+    const topics = (Array.isArray(body.topics) ? body.topics : []).slice(0, 20)
+      .map((t) => (typeof t === "string" ? t.slice(0, 300) : "")).filter(Boolean);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
     if (!title) throw new Error("title required");
